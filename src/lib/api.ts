@@ -1,3 +1,5 @@
+import { ParsedIngredient } from '@/types/drug';
+
 const API_KEY = process.env.DATA_GO_KR_API_KEY || '';
 const API_TIMEOUT = 10000;
 
@@ -8,6 +10,18 @@ function fetchWithTimeout(url: string, timeout = API_TIMEOUT): Promise<Response>
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
+}
+
+async function fetchJson(url: string, timeout = API_TIMEOUT) {
+  const res = await fetchWithTimeout(url, timeout);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('json')) {
+    throw new Error('API returned non-JSON response');
+  }
+
+  return res.json();
 }
 
 interface FetchOptions {
@@ -54,9 +68,7 @@ export async function searchDrugsByName(itemName: string, options: FetchOptions 
     item_name: itemName,
   });
 
-  const res = await fetchWithTimeout(`${DRUG_PERMIT_BASE}?${params.toString()}`);
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
+  return fetchJson(`${DRUG_PERMIT_BASE}?${params.toString()}`);
 }
 
 export async function searchDrugsByIngredient(materialName: string, options: FetchOptions = {}) {
@@ -72,9 +84,7 @@ export async function searchDrugsByIngredient(materialName: string, options: Fet
     item_ingr_name: materialName,
   });
 
-  const res = await fetchWithTimeout(`${DRUG_PERMIT_BASE}?${params.toString()}`);
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
+  return fetchJson(`${DRUG_PERMIT_BASE}?${params.toString()}`);
 }
 
 export async function getEasyDrugInfo(itemName: string, options: FetchOptions = {}) {
@@ -87,12 +97,8 @@ export async function getEasyDrugInfo(itemName: string, options: FetchOptions = 
     itemName: itemName,
   });
 
-  const res = await fetchWithTimeout(`${EASY_DRUG_BASE}?${params.toString()}`);
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
+  return fetchJson(`${EASY_DRUG_BASE}?${params.toString()}`);
 }
-
-import { ParsedIngredient } from '@/types/drug';
 
 export function parseIngredients(materialName: string): ParsedIngredient[] {
   if (!materialName) return [];
