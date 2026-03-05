@@ -92,7 +92,9 @@ export async function getEasyDrugInfo(itemName: string, options: FetchOptions = 
   return res.json();
 }
 
-export function parseIngredients(materialName: string) {
+import { ParsedIngredient } from '@/types/drug';
+
+export function parseIngredients(materialName: string): ParsedIngredient[] {
   if (!materialName) return [];
 
   const sections = materialName.split(/[|]/).map(s => s.trim()).filter(Boolean);
