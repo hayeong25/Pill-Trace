@@ -116,6 +116,9 @@ export default function Home() {
   useEffect(() => {
     if (currentQuery) {
       fetchResults(currentQuery, currentMode, currentPage);
+      document.title = `${currentQuery} - Pill Trace`;
+    } else {
+      document.title = 'Pill Trace - 의약품 성분 검색';
     }
     return () => {
       abortControllerRef.current?.abort();
