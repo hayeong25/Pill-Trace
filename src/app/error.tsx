@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 export default function Error({
   reset,
 }: {
@@ -15,12 +17,20 @@ export default function Error({
       </div>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">오류가 발생했습니다</h1>
       <p className="text-gray-400 mb-8 text-center">예상치 못한 오류가 발생했습니다. 다시 시도해주세요.</p>
-      <button
-        onClick={reset}
-        className="px-6 py-3 bg-blue-600 text-white font-medium rounded-2xl hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200"
-      >
-        다시 시도
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={reset}
+          className="px-6 py-3 bg-blue-600 text-white font-medium rounded-2xl hover:bg-blue-700 transition-colors shadow-sm shadow-blue-200"
+        >
+          다시 시도
+        </button>
+        <Link
+          href="/"
+          className="px-6 py-3 bg-white text-gray-600 font-medium rounded-2xl border border-gray-200 hover:bg-gray-50 transition-colors"
+        >
+          홈으로
+        </Link>
+      </div>
     </div>
   );
 }
