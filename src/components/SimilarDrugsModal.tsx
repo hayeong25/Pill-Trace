@@ -39,6 +39,7 @@ export default function SimilarDrugsModal({
     const fetchSimilar = async () => {
       setIsLoading(true);
       setError('');
+      setDrugs([]);
       try {
         const params = new URLSearchParams({
           material: materialName,
