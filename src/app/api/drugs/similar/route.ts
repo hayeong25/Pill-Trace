@@ -33,9 +33,10 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Similar drugs search error:', error);
+    const isTimeout = error instanceof DOMException && error.name === 'AbortError';
     return NextResponse.json(
-      { error: '유사 약품 검색 중 오류가 발생했습니다.' },
-      { status: 500 }
+      { error: isTimeout ? '검색 시간이 초과되었습니다. 다시 시도해주세요.' : '유사 약품 검색 중 오류가 발생했습니다.' },
+      { status: isTimeout ? 504 : 500 }
     );
   }
 }
