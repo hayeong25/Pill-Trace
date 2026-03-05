@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import './globals.css';
@@ -14,6 +14,11 @@ export const metadata: Metadata = {
     siteName: 'Pill Trace',
   },
   keywords: ['의약품', '약 검색', '성분 검색', '약 성분', '유사 약품', '의약품 정보'],
+  manifest: '/manifest.json',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#2563eb',
 };
 
 export default function RootLayout({
