@@ -219,41 +219,45 @@ export default memo(function DrugCard({
         )}
       </div>
 
-      {isDetailOpen && (
-        <div className="mt-4 space-y-3">
-          {easyInfo ? (
-            DETAIL_SECTIONS.map(({ key, label, color, bg, icon }) => {
-              const value = easyInfo[key as keyof EasyDrugInfo];
-              if (!value) return null;
-              return (
-                <div key={key} className={`${bg} rounded-xl p-4`}>
-                  <h5 className={`flex items-center gap-1.5 text-sm font-bold ${color} mb-2`}>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
-                    </svg>
-                    {label}
-                  </h5>
-                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{value}</p>
+      <div className="detail-expand" data-open={isDetailOpen}>
+        <div className="detail-expand-inner">
+          {(isDetailOpen || easyInfo || detailError) && (
+            <div className="mt-4 space-y-3">
+              {easyInfo ? (
+                DETAIL_SECTIONS.map(({ key, label, color, bg, icon }) => {
+                  const value = easyInfo[key as keyof EasyDrugInfo];
+                  if (!value) return null;
+                  return (
+                    <div key={key} className={`${bg} rounded-xl p-4`}>
+                      <h5 className={`flex items-center gap-1.5 text-sm font-bold ${color} mb-2`}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
+                        </svg>
+                        {label}
+                      </h5>
+                      <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{value}</p>
+                    </div>
+                  );
+                })
+              ) : detailError ? (
+                <div className="text-center py-6 text-sm bg-red-50 rounded-xl">
+                  <p className="text-red-500">상세 정보를 불러오지 못했습니다.</p>
+                  <button
+                    onClick={handleRetryDetail}
+                    className="mt-2 text-xs text-red-600 underline hover:no-underline"
+                  >
+                    다시 시도
+                  </button>
                 </div>
-              );
-            })
-          ) : detailError ? (
-            <div className="text-center py-6 text-sm bg-red-50 rounded-xl">
-              <p className="text-red-500">상세 정보를 불러오지 못했습니다.</p>
-              <button
-                onClick={handleRetryDetail}
-                className="mt-2 text-xs text-red-600 underline hover:no-underline"
-              >
-                다시 시도
-              </button>
-            </div>
-          ) : (
-            <div className="text-center py-6 text-gray-400 text-sm bg-gray-50 rounded-xl">
-              이 약품의 상세 정보가 등록되어 있지 않습니다.
+              ) : (
+                <div className="text-center py-6 text-gray-400 text-sm bg-gray-50 rounded-xl">
+                  이 약품의 상세 정보가 등록되어 있지 않습니다.
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 });
