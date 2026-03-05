@@ -91,12 +91,13 @@ export default function Home() {
       const endpoint = mode === 'drug' ? '/api/drugs/search' : '/api/drugs/ingredients';
       const params = new URLSearchParams({ q: query, page: String(page) });
       const res = await fetch(`${endpoint}?${params}`, { signal: controller.signal });
+      const data = await res.json();
+
       if (!res.ok) {
-        setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        setError(data?.error || '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
         setResults(null);
         return;
       }
-      const data = await res.json();
 
       if (data.error) {
         setError(data.error);
@@ -142,6 +143,10 @@ export default function Home() {
     setHasSearched(false);
     setError('');
   };
+
+  const handleCloseModal = useCallback(() => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+  }, []);
 
   const handleFindSimilar = (drug: DrugSearchResult) => {
     setModal({
@@ -320,7 +325,7 @@ export default function Home() {
 
       <SimilarDrugsModal
         isOpen={modal.isOpen}
-        onClose={() => setModal(prev => ({ ...prev, isOpen: false }))}
+        onClose={handleCloseModal}
         drugName={modal.drugName}
         materialName={modal.materialName}
         excludeSeq={modal.excludeSeq}
