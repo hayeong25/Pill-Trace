@@ -78,9 +78,6 @@ export async function searchDrugsByIngredient(materialName: string, options: Fet
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
     type: 'json',
-    item_name: '',
-    spclty_pblc: '',
-    prduct_type: '',
     item_ingr_name: materialName,
   });
 
