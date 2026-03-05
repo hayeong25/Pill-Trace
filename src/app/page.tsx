@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import SearchBar from '@/components/SearchBar';
 import DrugCard from '@/components/DrugCard';
@@ -94,8 +94,13 @@ export default function Home() {
   const currentQuery = searchParams.get('q') || '';
   const currentMode = (searchParams.get('mode') as 'drug' | 'ingredient') || 'drug';
   const currentPage = parseInt(searchParams.get('page') || '1', 10) || 1;
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchResults = useCallback(async (query: string, mode: 'drug' | 'ingredient', page: number) => {
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setIsLoading(true);
     setError('');
     setHasSearched(true);
@@ -103,7 +108,7 @@ export default function Home() {
     try {
       const endpoint = mode === 'drug' ? '/api/drugs/search' : '/api/drugs/ingredients';
       const params = new URLSearchParams({ q: query, page: String(page) });
-      const res = await fetch(`${endpoint}?${params}`);
+      const res = await fetch(`${endpoint}?${params}`, { signal: controller.signal });
       if (!res.ok) {
         setError('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
         setResults(null);
@@ -117,7 +122,8 @@ export default function Home() {
       } else {
         setResults(data);
       }
-    } catch {
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setError('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
       setResults(null);
     } finally {
