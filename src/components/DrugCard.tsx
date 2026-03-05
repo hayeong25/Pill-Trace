@@ -139,7 +139,7 @@ export default memo(function DrugCard({
                   className="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium"
                   title={ing.raw}
                 >
-                  {ing.name}
+                  <HighlightText text={ing.name} query={searchQuery} />
                   {ing.amount && <span className="text-blue-400 ml-1">({ing.amount})</span>}
                 </span>
               ))}
