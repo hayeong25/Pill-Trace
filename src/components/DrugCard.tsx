@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import Image from 'next/image';
 import { ParsedIngredient, EasyDrugInfo } from '@/types/drug';
 
@@ -43,7 +43,7 @@ const DETAIL_SECTIONS = [
   { key: 'depositMethodQesitm', label: '보관법', color: 'text-gray-700', bg: 'bg-gray-100', icon: 'M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4' },
 ] as const;
 
-export default function DrugCard({
+export default memo(function DrugCard({
   itemName,
   entpName,
   materialName,
@@ -247,4 +247,4 @@ export default function DrugCard({
       )}
     </div>
   );
-}
+});

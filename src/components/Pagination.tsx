@@ -1,5 +1,7 @@
 'use client';
 
+import { memo } from 'react';
+
 interface PaginationProps {
   currentPage: number;
   totalCount: number;
@@ -7,7 +9,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export default function Pagination({ currentPage, totalCount, numOfRows, onPageChange }: PaginationProps) {
+export default memo(function Pagination({ currentPage, totalCount, numOfRows, onPageChange }: PaginationProps) {
   const totalPages = Math.ceil(totalCount / numOfRows);
 
   if (totalPages <= 1) return null;
@@ -93,4 +95,4 @@ export default function Pagination({ currentPage, totalCount, numOfRows, onPageC
     </nav>
     </div>
   );
-}
+});
