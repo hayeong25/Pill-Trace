@@ -57,12 +57,13 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
       {pages.map(page => (
         <button
           key={page}
-          onClick={() => onPageChange(page)}
+          onClick={() => page !== currentPage && onPageChange(page)}
+          disabled={page === currentPage}
           aria-label={`${page} 페이지`}
           aria-current={page === currentPage ? 'page' : undefined}
           className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors ${
             page === currentPage
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-200 cursor-default'
               : 'border border-gray-200 hover:bg-gray-50'
           }`}
         >
