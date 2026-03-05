@@ -67,6 +67,21 @@ export default memo(function DrugCard({
   const hasMoreIngredients = ingredients.length > MAX_VISIBLE_INGREDIENTS;
   const visibleIngredients = showAllIngredients ? ingredients : ingredients.slice(0, MAX_VISIBLE_INGREDIENTS);
 
+  const fetchEasyInfo = async () => {
+    setIsDetailLoading(true);
+    setDetailError(false);
+    try {
+      const params = new URLSearchParams({ name: itemName });
+      const res = await fetch(`/api/drugs/easy?${params}`);
+      const data = await res.json();
+      setEasyInfo(data.item || null);
+    } catch {
+      setDetailError(true);
+    } finally {
+      setIsDetailLoading(false);
+    }
+  };
+
   const handleToggleDetail = async () => {
     if (isDetailOpen) {
       setIsDetailOpen(false);
@@ -74,20 +89,14 @@ export default memo(function DrugCard({
     }
 
     if (!easyInfo && !detailError) {
-      setIsDetailLoading(true);
-      setDetailError(false);
-      try {
-        const params = new URLSearchParams({ name: itemName });
-        const res = await fetch(`/api/drugs/easy?${params}`);
-        const data = await res.json();
-        setEasyInfo(data.item || null);
-      } catch {
-        setDetailError(true);
-      } finally {
-        setIsDetailLoading(false);
-      }
+      await fetchEasyInfo();
     }
 
+    setIsDetailOpen(true);
+  };
+
+  const handleRetryDetail = async () => {
+    await fetchEasyInfo();
     setIsDetailOpen(true);
   };
 
@@ -232,7 +241,7 @@ export default memo(function DrugCard({
             <div className="text-center py-6 text-sm bg-red-50 rounded-xl">
               <p className="text-red-500">상세 정보를 불러오지 못했습니다.</p>
               <button
-                onClick={() => { setDetailError(false); handleToggleDetail(); }}
+                onClick={handleRetryDetail}
                 className="mt-2 text-xs text-red-600 underline hover:no-underline"
               >
                 다시 시도
