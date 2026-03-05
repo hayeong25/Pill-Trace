@@ -23,7 +23,10 @@ const MAX_RECENT = 5;
 function getRecentSearches(): string[] {
   try {
     const stored = localStorage.getItem(RECENT_SEARCH_KEY);
-    return stored ? JSON.parse(stored) : [];
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is string => typeof item === 'string');
   } catch {
     return [];
   }
@@ -76,9 +79,11 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="flex flex-wrap gap-2 mb-3" role="radiogroup" aria-label="검색 모드">
         <button
           type="button"
+          role="radio"
+          aria-checked={mode === 'drug'}
           onClick={() => setMode('drug')}
           className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
             mode === 'drug'
@@ -93,6 +98,8 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
         </button>
         <button
           type="button"
+          role="radio"
+          aria-checked={mode === 'ingredient'}
           onClick={() => setMode('ingredient')}
           className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
             mode === 'ingredient'
