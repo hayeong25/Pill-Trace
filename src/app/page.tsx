@@ -92,7 +92,8 @@ export default function Home() {
   });
 
   const currentQuery = searchParams.get('q') || '';
-  const currentMode = (searchParams.get('mode') as 'drug' | 'ingredient') || 'drug';
+  const modeParam = searchParams.get('mode');
+  const currentMode: 'drug' | 'ingredient' = modeParam === 'ingredient' ? 'ingredient' : 'drug';
   const currentPage = parseInt(searchParams.get('page') || '1', 10) || 1;
   const abortControllerRef = useRef<AbortController | null>(null);
 
