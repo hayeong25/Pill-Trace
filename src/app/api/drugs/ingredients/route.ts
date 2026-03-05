@@ -7,8 +7,8 @@ export async function GET(request: NextRequest) {
   const pageParam = parseInt(searchParams.get('page') || '1', 10);
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
 
-  if (!query) {
-    return NextResponse.json({ error: '성분명을 입력해주세요.' }, { status: 400 });
+  if (!query || query.length > 100) {
+    return NextResponse.json({ error: '성분명을 입력해주세요. (최대 100자)' }, { status: 400 });
   }
 
   try {

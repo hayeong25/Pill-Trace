@@ -123,6 +123,7 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
                   : '성분명을 입력하세요 (예: 아세트아미노펜)'
               }
               autoFocus={!compact}
+              maxLength={100}
               enterKeyHint="search"
               className="w-full pl-12 pr-10 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base bg-white shadow-sm"
             />
