@@ -42,6 +42,7 @@ export default function DrugCard({
   const [easyInfo, setEasyInfo] = useState<EasyDrugInfo | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showAllIngredients, setShowAllIngredients] = useState(false);
 
@@ -55,15 +56,16 @@ export default function DrugCard({
       return;
     }
 
-    if (!easyInfo) {
+    if (!easyInfo && !detailError) {
       setIsDetailLoading(true);
+      setDetailError(false);
       try {
         const params = new URLSearchParams({ name: itemName });
         const res = await fetch(`/api/drugs/easy?${params}`);
         const data = await res.json();
         setEasyInfo(data.item || null);
       } catch {
-        setEasyInfo(null);
+        setDetailError(true);
       } finally {
         setIsDetailLoading(false);
       }
@@ -207,6 +209,16 @@ export default function DrugCard({
                 </div>
               );
             })
+          ) : detailError ? (
+            <div className="text-center py-6 text-sm bg-red-50 rounded-xl">
+              <p className="text-red-500">상세 정보를 불러오지 못했습니다.</p>
+              <button
+                onClick={() => { setDetailError(false); handleToggleDetail(); }}
+                className="mt-2 text-xs text-red-600 underline hover:no-underline"
+              >
+                다시 시도
+              </button>
+            </div>
           ) : (
             <div className="text-center py-6 text-gray-400 text-sm bg-gray-50 rounded-xl">
               이 약품의 상세 정보가 등록되어 있지 않습니다.

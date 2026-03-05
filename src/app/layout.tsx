@@ -24,6 +24,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="antialiased min-h-screen flex flex-col">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:text-sm focus:font-medium">
+          본문으로 건너뛰기
+        </a>
         <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-40">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2.5">
@@ -42,7 +45,7 @@ export default function RootLayout({
             </div>
           </div>
         </header>
-        <main className="flex-1">
+        <main id="main-content" className="flex-1">
           <Suspense>
             {children}
           </Suspense>
