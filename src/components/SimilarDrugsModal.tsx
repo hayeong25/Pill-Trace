@@ -2,18 +2,10 @@
 
 import { useEffect, useState, useRef } from 'react';
 import DrugCard from './DrugCard';
-import { ParsedIngredient } from '@/types/drug';
+import { DrugSearchResult } from '@/types/drug';
 
-interface SimilarDrug {
-  ITEM_NAME: string;
-  ENTP_NAME: string;
-  MATERIAL_NAME: string;
-  ITEM_SEQ: string;
-  CHART: string;
-  STORAGE_METHOD: string;
-  ITEM_PERMIT_DATE: string;
+interface SimilarDrug extends DrugSearchResult {
   similarity: number;
-  ingredients: ParsedIngredient[];
 }
 
 interface SimilarDrugsModalProps {
@@ -40,7 +32,7 @@ export default function SimilarDrugsModal({
     if (!isOpen || !materialName) return;
 
     const cacheKey = `${materialName}|${excludeSeq}`;
-    if (lastFetchedRef.current === cacheKey && drugs.length > 0) return;
+    if (lastFetchedRef.current === cacheKey) return;
 
     const fetchSimilar = async () => {
       setIsLoading(true);
@@ -67,14 +59,41 @@ export default function SimilarDrugsModal({
     };
 
     fetchSimilar();
-  }, [isOpen, materialName, excludeSeq, drugs.length]);
+  }, [isOpen, materialName, excludeSeq]);
+
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
+        if (e.key === 'Escape') {
+          onClose();
+          return;
+        }
+
+        if (e.key === 'Tab' && modalRef.current) {
+          const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              e.preventDefault();
+              last?.focus();
+            }
+          } else {
+            if (document.activeElement === last) {
+              e.preventDefault();
+              first?.focus();
+            }
+          }
+        }
       };
+
       window.addEventListener('keydown', handleKeyDown);
       return () => {
         document.body.style.overflow = '';
@@ -90,7 +109,7 @@ export default function SimilarDrugsModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="similar-drugs-title">
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden">
+      <div ref={modalRef} className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden">
         <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex justify-between items-center z-10">
           <div>
             <div className="flex items-center gap-2">
