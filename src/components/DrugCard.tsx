@@ -14,7 +14,23 @@ interface DrugCardProps {
   storageMethod?: string;
   imageUrl?: string;
   similarity?: number;
+  searchQuery?: string;
   onFindSimilar?: () => void;
+}
+
+function HighlightText({ text, query }: { text: string; query?: string }) {
+  if (!query || !text) return <>{text}</>;
+  const lowerText = text.toLowerCase();
+  const lowerQuery = query.toLowerCase();
+  const idx = lowerText.indexOf(lowerQuery);
+  if (idx === -1) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="bg-yellow-200 text-inherit rounded-sm px-0.5">{text.slice(idx, idx + query.length)}</mark>
+      {text.slice(idx + query.length)}
+    </>
+  );
 }
 
 const DETAIL_SECTIONS = [
@@ -37,6 +53,7 @@ export default function DrugCard({
   storageMethod,
   imageUrl,
   similarity,
+  searchQuery,
   onFindSimilar,
 }: DrugCardProps) {
   const [easyInfo, setEasyInfo] = useState<EasyDrugInfo | null>(null);
@@ -93,7 +110,9 @@ export default function DrugCard({
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start">
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-900 truncate">{itemName}</h3>
+              <h3 className="text-base font-bold text-gray-900 truncate">
+                <HighlightText text={itemName} query={searchQuery} />
+              </h3>
               <p className="text-sm text-gray-400 mt-0.5">{entpName}</p>
             </div>
             {similarity !== undefined && (

@@ -312,6 +312,7 @@ export default function Home() {
                         chart={drug.CHART}
                         storageMethod={drug.STORAGE_METHOD}
                         imageUrl={drug.BIG_PRDT_IMG_URL}
+                        searchQuery={currentQuery}
                         onFindSimilar={() => handleFindSimilar(drug)}
                       />
                     ))}
