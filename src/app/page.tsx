@@ -91,14 +91,19 @@ export default function Home() {
       const endpoint = mode === 'drug' ? '/api/drugs/search' : '/api/drugs/ingredients';
       const params = new URLSearchParams({ q: query, page: String(page) });
       const res = await fetch(`${endpoint}?${params}`, { signal: controller.signal });
-      const data = await res.json();
 
       if (!res.ok) {
-        setError(data?.error || '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        let errorMsg = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+        try {
+          const errData = await res.json();
+          if (errData?.error) errorMsg = errData.error;
+        } catch { /* non-JSON error response */ }
+        setError(errorMsg);
         setResults(null);
         return;
       }
 
+      const data = await res.json();
       if (data.error) {
         setError(data.error);
         setResults(null);
