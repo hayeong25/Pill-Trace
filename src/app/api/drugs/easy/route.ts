@@ -5,8 +5,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const itemName = searchParams.get('name');
 
-  if (!itemName) {
-    return NextResponse.json({ error: '약품명이 필요합니다.' }, { status: 400 });
+  if (!itemName || itemName.length > 200) {
+    return NextResponse.json({ error: '약품명이 필요합니다. (최대 200자)' }, { status: 400 });
   }
 
   try {
@@ -17,7 +17,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ item: null });
     }
 
-    return NextResponse.json({ item: items[0] });
+    const response = NextResponse.json({ item: items[0] });
+    response.headers.set('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1200');
+    return response;
   } catch (error) {
     console.error('Easy drug info error:', error);
     return NextResponse.json(
