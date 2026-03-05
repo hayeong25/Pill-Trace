@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 type SearchMode = 'drug' | 'ingredient';
 
@@ -17,9 +17,32 @@ const QUICK_EXAMPLES = {
   ingredient: ['아세트아미노펜', '이부프로펜', '덱스트로메토르판'],
 };
 
+const RECENT_SEARCH_KEY = 'pill-trace-recent-searches';
+const MAX_RECENT = 5;
+
+function getRecentSearches(): string[] {
+  try {
+    const stored = localStorage.getItem(RECENT_SEARCH_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentSearch(query: string) {
+  try {
+    const recent = getRecentSearches().filter(q => q !== query);
+    recent.unshift(query);
+    localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)));
+  } catch {
+    // localStorage unavailable
+  }
+}
+
 export default function SearchBar({ onSearch, isLoading, compact, initialQuery = '', initialMode = 'drug' }: SearchBarProps) {
   const [query, setQuery] = useState(initialQuery);
   const [mode, setMode] = useState<SearchMode>(initialMode);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -29,16 +52,26 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
     setMode(initialMode);
   }, [initialMode]);
 
+  useEffect(() => {
+    setRecentSearches(getRecentSearches());
+  }, []);
+
+  const executeSearch = useCallback((keyword: string, searchMode: SearchMode) => {
+    saveRecentSearch(keyword);
+    setRecentSearches(getRecentSearches());
+    onSearch(keyword, searchMode);
+  }, [onSearch]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      onSearch(query.trim(), mode);
+      executeSearch(query.trim(), mode);
     }
   };
 
   const handleQuickSearch = (keyword: string) => {
     setQuery(keyword);
-    onSearch(keyword, mode);
+    executeSearch(keyword, mode);
   };
 
   return (
@@ -125,18 +158,36 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
       </div>
 
       {!compact && (
-        <div className="mt-3 flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-gray-400">빠른 검색:</span>
-          {QUICK_EXAMPLES[mode].map((keyword) => (
-            <button
-              key={keyword}
-              type="button"
-              onClick={() => handleQuickSearch(keyword)}
-              className="px-3 py-1 text-xs bg-white border border-gray-200 text-gray-500 rounded-full hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-            >
-              {keyword}
-            </button>
-          ))}
+        <div className="mt-3 space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-gray-400">빠른 검색:</span>
+            {QUICK_EXAMPLES[mode].map((keyword) => (
+              <button
+                key={keyword}
+                type="button"
+                onClick={() => handleQuickSearch(keyword)}
+                className="px-3 py-1 text-xs bg-white border border-gray-200 text-gray-500 rounded-full hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                {keyword}
+              </button>
+            ))}
+          </div>
+
+          {recentSearches.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-gray-400">최근 검색:</span>
+              {recentSearches.map((keyword) => (
+                <button
+                  key={keyword}
+                  type="button"
+                  onClick={() => handleQuickSearch(keyword)}
+                  className="px-3 py-1 text-xs bg-gray-50 border border-gray-200 text-gray-500 rounded-full hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                >
+                  {keyword}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </form>
