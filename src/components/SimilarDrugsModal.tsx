@@ -93,7 +93,14 @@ export default function SimilarDrugsModal({
       <div className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden">
         <div className="sticky top-0 bg-white/90 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex justify-between items-center z-10">
           <div>
-            <h2 id="similar-drugs-title" className="text-lg font-bold text-gray-900">유사 성분 약품</h2>
+            <div className="flex items-center gap-2">
+              <h2 id="similar-drugs-title" className="text-lg font-bold text-gray-900">유사 성분 약품</h2>
+              {!isLoading && drugs.length > 0 && (
+                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                  {drugs.length}건
+                </span>
+              )}
+            </div>
             <p className="text-sm text-gray-400 mt-0.5">
               <span className="font-medium text-gray-600">{drugName}</span>과(와) 유사한 성분
             </p>
