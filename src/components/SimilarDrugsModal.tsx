@@ -34,6 +34,8 @@ export default function SimilarDrugsModal({
     const cacheKey = `${materialName}|${excludeSeq}`;
     if (lastFetchedRef.current === cacheKey) return;
 
+    const controller = new AbortController();
+
     const fetchSimilar = async () => {
       setIsLoading(true);
       setError('');
@@ -42,7 +44,7 @@ export default function SimilarDrugsModal({
           material: materialName,
           exclude: excludeSeq,
         });
-        const res = await fetch(`/api/drugs/similar?${params}`);
+        const res = await fetch(`/api/drugs/similar?${params}`, { signal: controller.signal });
         const data = await res.json();
 
         if (data.error) {
@@ -51,7 +53,8 @@ export default function SimilarDrugsModal({
           setDrugs(data.items || []);
           lastFetchedRef.current = cacheKey;
         }
-      } catch {
+      } catch (err) {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
         setError('유사 약품 검색 중 오류가 발생했습니다.');
       } finally {
         setIsLoading(false);
@@ -59,6 +62,10 @@ export default function SimilarDrugsModal({
     };
 
     fetchSimilar();
+
+    return () => {
+      controller.abort();
+    };
   }, [isOpen, materialName, excludeSeq]);
 
   const modalRef = useRef<HTMLDivElement>(null);
