@@ -6,26 +6,7 @@ import SearchBar from '@/components/SearchBar';
 import DrugCard from '@/components/DrugCard';
 import Pagination from '@/components/Pagination';
 import SimilarDrugsModal from '@/components/SimilarDrugsModal';
-import { ParsedIngredient } from '@/types/drug';
-
-interface DrugResult {
-  ITEM_SEQ: string;
-  ITEM_NAME: string;
-  ENTP_NAME: string;
-  MATERIAL_NAME: string;
-  CHART: string;
-  STORAGE_METHOD: string;
-  ITEM_PERMIT_DATE: string;
-  BIG_PRDT_IMG_URL: string;
-  ingredients: ParsedIngredient[];
-}
-
-interface SearchResponse {
-  items: DrugResult[];
-  totalCount: number;
-  pageNo: number;
-  numOfRows: number;
-}
+import { DrugSearchResult, SearchResponse } from '@/types/drug';
 
 interface ModalState {
   isOpen: boolean;
@@ -136,6 +117,9 @@ export default function Home() {
     if (currentQuery) {
       fetchResults(currentQuery, currentMode, currentPage);
     }
+    return () => {
+      abortControllerRef.current?.abort();
+    };
   }, [currentQuery, currentMode, currentPage, fetchResults]);
 
   const handleSearch = (query: string, mode: 'drug' | 'ingredient') => {
@@ -156,7 +140,7 @@ export default function Home() {
     setError('');
   };
 
-  const handleFindSimilar = (drug: DrugResult) => {
+  const handleFindSimilar = (drug: DrugSearchResult) => {
     setModal({
       isOpen: true,
       drugName: drug.ITEM_NAME,

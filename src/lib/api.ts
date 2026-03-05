@@ -137,18 +137,19 @@ export function parseIngredients(materialName: string): ParsedIngredient[] {
 
 export function findSimilarDrugs(
   targetMaterials: string[],
-  allDrugs: Array<{ ITEM_NAME: string; MATERIAL_NAME: string; ITEM_SEQ: string; ENTP_NAME: string }>,
+  allDrugs: Array<Record<string, unknown>>,
   excludeSeq: string
 ) {
   const targetSet = new Set(targetMaterials.map(m => m.toLowerCase().trim()));
 
   return allDrugs
-    .filter(drug => drug.ITEM_SEQ !== excludeSeq)
+    .filter(drug => String(drug.ITEM_SEQ || '') !== excludeSeq)
     .map(drug => {
-      const drugIngredients = parseIngredients(drug.MATERIAL_NAME).map(i => i.name.toLowerCase().trim());
+      const materialName = String(drug.MATERIAL_NAME || '');
+      const drugIngredients = parseIngredients(materialName).map(i => i.name.toLowerCase().trim());
       const matchCount = drugIngredients.filter(i => targetSet.has(i)).length;
       const similarity = targetSet.size > 0 ? matchCount / Math.max(targetSet.size, drugIngredients.length) : 0;
-      return { ...drug, similarity, matchCount };
+      return { ...drug, similarity, matchCount, MATERIAL_NAME: materialName };
     })
     .filter(drug => drug.matchCount > 0)
     .sort((a, b) => b.similarity - a.similarity);

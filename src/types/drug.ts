@@ -41,3 +41,22 @@ export interface ParsedIngredient {
   raw: string;
 }
 
+export interface DrugSearchResult {
+  ITEM_SEQ: string;
+  ITEM_NAME: string;
+  ENTP_NAME: string;
+  MATERIAL_NAME: string;
+  CHART: string;
+  STORAGE_METHOD: string;
+  ITEM_PERMIT_DATE: string;
+  BIG_PRDT_IMG_URL: string;
+  ingredients: ParsedIngredient[];
+}
+
+export interface SearchResponse {
+  items: DrugSearchResult[];
+  totalCount: number;
+  pageNo: number;
+  numOfRows: number;
+}
+
