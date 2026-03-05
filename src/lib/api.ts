@@ -1,0 +1,153 @@
+const API_KEY = process.env.DATA_GO_KR_API_KEY || '';
+const API_TIMEOUT = 10000;
+
+const DRUG_PERMIT_BASE = 'https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnDtlInq07';
+const EASY_DRUG_BASE = 'https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList';
+
+function fetchWithTimeout(url: string, timeout = API_TIMEOUT): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
+}
+
+interface FetchOptions {
+  pageNo?: number;
+  numOfRows?: number;
+}
+
+interface ApiResponse {
+  body?: {
+    items?: Record<string, unknown>[] | { item?: Record<string, unknown> | Record<string, unknown>[] };
+    totalCount?: number;
+    pageNo?: number;
+    numOfRows?: number;
+  };
+}
+
+export function extractItems(data: ApiResponse): { items: Record<string, unknown>[]; totalCount: number; pageNo: number; numOfRows: number } {
+  const body = data?.body;
+  const rawItems = body?.items;
+  let items: Record<string, unknown>[] = [];
+
+  if (Array.isArray(rawItems)) {
+    items = rawItems as Record<string, unknown>[];
+  } else if (rawItems && 'item' in rawItems) {
+    const rawItem = rawItems.item;
+    items = Array.isArray(rawItem) ? rawItem : rawItem ? [rawItem] : [];
+  }
+
+  return {
+    items,
+    totalCount: body?.totalCount || 0,
+    pageNo: body?.pageNo || 1,
+    numOfRows: body?.numOfRows || 20,
+  };
+}
+
+export async function searchDrugsByName(itemName: string, options: FetchOptions = {}) {
+  const { pageNo = 1, numOfRows = 100 } = options;
+  const params = new URLSearchParams({
+    serviceKey: API_KEY,
+    pageNo: String(pageNo),
+    numOfRows: String(numOfRows),
+    type: 'json',
+    item_name: itemName,
+  });
+
+  const res = await fetchWithTimeout(`${DRUG_PERMIT_BASE}?${params.toString()}`);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+export async function searchDrugsByIngredient(materialName: string, options: FetchOptions = {}) {
+  const { pageNo = 1, numOfRows = 100 } = options;
+  const params = new URLSearchParams({
+    serviceKey: API_KEY,
+    pageNo: String(pageNo),
+    numOfRows: String(numOfRows),
+    type: 'json',
+    item_name: '',
+    spclty_pblc: '',
+    prduct_type: '',
+    item_ingr_name: materialName,
+  });
+
+  const res = await fetchWithTimeout(`${DRUG_PERMIT_BASE}?${params.toString()}`);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+export async function getEasyDrugInfo(itemName: string, options: FetchOptions = {}) {
+  const { pageNo = 1, numOfRows = 100 } = options;
+  const params = new URLSearchParams({
+    serviceKey: API_KEY,
+    pageNo: String(pageNo),
+    numOfRows: String(numOfRows),
+    type: 'json',
+    itemName: itemName,
+  });
+
+  const res = await fetchWithTimeout(`${EASY_DRUG_BASE}?${params.toString()}`);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+export function parseIngredients(materialName: string) {
+  if (!materialName) return [];
+
+  const sections = materialName.split(/[|]/).map(s => s.trim()).filter(Boolean);
+
+  const ingredientParts: string[] = [];
+
+  for (const section of sections) {
+    const headerMatch = section.match(/^(총량|유효성분|첨가제)\s*:\s*(.*)$/);
+
+    if (headerMatch) {
+      const [, header, content] = headerMatch;
+      if (header === '총량' || header === '첨가제') continue;
+      const subParts = content.split(/[;,]/).map(s => s.trim()).filter(Boolean);
+      ingredientParts.push(...subParts);
+    } else {
+      const subParts = section.split(/[;]/).map(s => s.trim()).filter(Boolean);
+      ingredientParts.push(...subParts);
+    }
+  }
+
+  return ingredientParts.map(part => {
+    const amountMatch = part.match(/^(.+?)\s+([\d,.]+\s*[a-zA-Zμ㎍㎎㎖%]+.*)$/);
+    if (amountMatch) {
+      return {
+        name: amountMatch[1].replace(/\s*\(.*?\)\s*/g, '').trim(),
+        amount: amountMatch[2].trim(),
+        unit: '',
+        raw: part,
+      };
+    }
+
+    return {
+      name: part.replace(/\s*\(.*?\)\s*/g, '').trim(),
+      amount: '',
+      unit: '',
+      raw: part,
+    };
+  });
+}
+
+export function findSimilarDrugs(
+  targetMaterials: string[],
+  allDrugs: Array<{ ITEM_NAME: string; MATERIAL_NAME: string; ITEM_SEQ: string; ENTP_NAME: string }>,
+  excludeSeq: string
+) {
+  const targetSet = new Set(targetMaterials.map(m => m.toLowerCase().trim()));
+
+  return allDrugs
+    .filter(drug => drug.ITEM_SEQ !== excludeSeq)
+    .map(drug => {
+      const drugIngredients = parseIngredients(drug.MATERIAL_NAME).map(i => i.name.toLowerCase().trim());
+      const matchCount = drugIngredients.filter(i => targetSet.has(i)).length;
+      const similarity = targetSet.size > 0 ? matchCount / Math.max(targetSet.size, drugIngredients.length) : 0;
+      return { ...drug, similarity, matchCount };
+    })
+    .filter(drug => drug.matchCount > 0)
+    .sort((a, b) => b.similarity - a.similarity);
+}
