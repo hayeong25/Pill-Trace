@@ -43,6 +43,11 @@ export default function DrugCard({
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [showAllIngredients, setShowAllIngredients] = useState(false);
+
+  const MAX_VISIBLE_INGREDIENTS = 5;
+  const hasMoreIngredients = ingredients.length > MAX_VISIBLE_INGREDIENTS;
+  const visibleIngredients = showAllIngredients ? ingredients : ingredients.slice(0, MAX_VISIBLE_INGREDIENTS);
 
   const handleToggleDetail = async () => {
     if (isDetailOpen) {
@@ -106,16 +111,27 @@ export default function DrugCard({
         <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">성분</h4>
         <div className="flex flex-wrap gap-1.5">
           {ingredients.length > 0 ? (
-            ingredients.map((ing, idx) => (
-              <span
-                key={idx}
-                className="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium"
-                title={ing.raw}
-              >
-                {ing.name}
-                {ing.amount && <span className="text-blue-400 ml-1">({ing.amount})</span>}
-              </span>
-            ))
+            <>
+              {visibleIngredients.map((ing, idx) => (
+                <span
+                  key={idx}
+                  className="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium"
+                  title={ing.raw}
+                >
+                  {ing.name}
+                  {ing.amount && <span className="text-blue-400 ml-1">({ing.amount})</span>}
+                </span>
+              ))}
+              {hasMoreIngredients && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllIngredients(!showAllIngredients)}
+                  className="inline-block px-2.5 py-1 bg-gray-100 text-gray-500 text-xs rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                >
+                  {showAllIngredients ? '접기' : `+${ingredients.length - MAX_VISIBLE_INGREDIENTS}개 더보기`}
+                </button>
+              )}
+            </>
           ) : (
             <span className="text-xs text-gray-300 italic">
               {materialName || '성분 정보 없음'}
