@@ -89,8 +89,21 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
                   ? '약 이름을 입력하세요 (예: 타이레놀)'
                   : '성분명을 입력하세요 (예: 아세트아미노펜)'
               }
-              className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base bg-white shadow-sm"
+              autoFocus={!compact}
+              className="w-full pl-12 pr-10 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base bg-white shadow-sm"
             />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                aria-label="검색어 지우기"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
           <button
             type="submit"

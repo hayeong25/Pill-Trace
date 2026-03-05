@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import DrugCard from './DrugCard';
 import { ParsedIngredient } from '@/types/drug';
 
@@ -34,9 +34,13 @@ export default function SimilarDrugsModal({
   const [drugs, setDrugs] = useState<SimilarDrug[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const lastFetchedRef = useRef('');
 
   useEffect(() => {
     if (!isOpen || !materialName) return;
+
+    const cacheKey = `${materialName}|${excludeSeq}`;
+    if (lastFetchedRef.current === cacheKey && drugs.length > 0) return;
 
     const fetchSimilar = async () => {
       setIsLoading(true);
@@ -53,6 +57,7 @@ export default function SimilarDrugsModal({
           setError(data.error);
         } else {
           setDrugs(data.items || []);
+          lastFetchedRef.current = cacheKey;
         }
       } catch {
         setError('유사 약품 검색 중 오류가 발생했습니다.');
@@ -62,7 +67,7 @@ export default function SimilarDrugsModal({
     };
 
     fetchSimilar();
-  }, [isOpen, materialName, excludeSeq]);
+  }, [isOpen, materialName, excludeSeq, drugs.length]);
 
   useEffect(() => {
     if (isOpen) {
