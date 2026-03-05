@@ -27,7 +27,7 @@
 - Public Data Portal API (data.go.kr)
 
 ## APIs Used
-- 의약품 제품 허가정보: `https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService05/getDrugPrdtPrmsnDtlInq05`
+- 의약품 제품 허가정보: `https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnDtlInq07`
 - 의약품개요정보(e약은요): `https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList`
 
 ## Project Structure
