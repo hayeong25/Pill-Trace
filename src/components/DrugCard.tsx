@@ -16,6 +16,7 @@ interface DrugCardProps {
   similarity?: number;
   searchQuery?: string;
   hasEasyInfo?: boolean;
+  maxPrice?: string;
   onFindSimilar?: () => void;
 }
 
@@ -56,6 +57,7 @@ export default memo(function DrugCard({
   similarity,
   searchQuery,
   hasEasyInfo = true,
+  maxPrice,
   onFindSimilar,
 }: DrugCardProps) {
   const [easyInfo, setEasyInfo] = useState<EasyDrugInfo | null>(null);
@@ -125,6 +127,12 @@ export default memo(function DrugCard({
                 <HighlightText text={itemName} query={searchQuery} />
               </h3>
               <p className="text-sm text-gray-400 mt-0.5">{entpName}</p>
+              {maxPrice && (
+                <p className="text-sm font-semibold text-emerald-600 mt-1">
+                  {Number(maxPrice).toLocaleString()}원
+                  <span className="text-xs font-normal text-gray-400 ml-1">(보험 상한가)</span>
+                </p>
+              )}
             </div>
             {similarity !== undefined && (
               <span className={`flex-shrink-0 ml-2 px-2.5 py-1 rounded-full text-xs font-bold ${

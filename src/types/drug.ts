@@ -56,6 +56,17 @@ export interface DrugSearchResult {
   BIG_PRDT_IMG_URL: string;
   ingredients: ParsedIngredient[];
   hasEasyInfo: boolean;
+  maxPrice?: string;
+}
+
+export interface DrugPriceInfo {
+  itemName: string;
+  entpName: string;
+  mdsCd: string;
+  mxCprc: string;
+  unit: string;
+  adtStaDd: string;
+  adtEndDd: string;
 }
 
 export interface SearchResponse {

@@ -311,6 +311,7 @@ export default function Home() {
                         imageUrl={drug.BIG_PRDT_IMG_URL}
                         searchQuery={currentQuery}
                         hasEasyInfo={drug.hasEasyInfo}
+                        maxPrice={drug.maxPrice}
                         onFindSimilar={() => handleFindSimilar(drug)}
                       />
                     ))}

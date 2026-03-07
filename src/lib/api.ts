@@ -5,6 +5,7 @@ const API_TIMEOUT = 10000;
 
 const DRUG_PERMIT_BASE = 'https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07';
 const EASY_DRUG_BASE = 'https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList';
+const DRUG_PRICE_BASE = 'https://apis.data.go.kr/B551182/dgamtCrtrInfoService1.2/getDgamtList';
 
 function fetchWithTimeout(url: string, timeout = API_TIMEOUT): Promise<Response> {
   const controller = new AbortController();
@@ -95,6 +96,16 @@ export async function getEasyDrugInfo(itemName: string, options: FetchOptions = 
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
     itemName: itemName,
+  });
+  return fetchJson(url);
+}
+
+export async function getDrugPriceInfo(itemName: string, options: FetchOptions = {}) {
+  const { pageNo = 1, numOfRows = 100 } = options;
+  const url = buildApiUrl(DRUG_PRICE_BASE, {
+    pageNo: String(pageNo),
+    numOfRows: String(numOfRows),
+    itmNm: itemName,
   });
   return fetchJson(url);
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByName, getEasyDrugInfo, parseIngredients, extractItems } from '@/lib/api';
+import { searchDrugsByName, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, extractItems } from '@/lib/api';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -12,9 +12,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const [data, easyData] = await Promise.all([
+    const [data, easyData, priceData] = await Promise.all([
       searchDrugsByName(query, { pageNo: page, numOfRows: 20 }),
       getEasyDrugInfo(query, { numOfRows: 100 }).catch(() => null),
+      getDrugPriceInfo(query, { numOfRows: 100 }).catch(() => null),
     ]);
 
     const { items, totalCount, pageNo, numOfRows } = extractItems(data);
@@ -27,11 +28,28 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const results = items.map((item) => ({
-      ...item,
-      ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || ''), String(item.ITEM_NAME || '')),
-      hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
-    }));
+    const priceMap = new Map<string, string>();
+    if (priceData) {
+      const { items: priceItems } = extractItems(priceData);
+      for (const item of priceItems) {
+        const name = String(item.itmNm || '');
+        const price = String(item.mxCprc || '');
+        if (name && price) {
+          priceMap.set(name, price);
+        }
+      }
+    }
+
+    const results = items.map((item) => {
+      const itemName = String(item.ITEM_NAME || '');
+      const maxPrice = priceMap.get(itemName) || '';
+      return {
+        ...item,
+        ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || ''), itemName),
+        hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
+        maxPrice,
+      };
+    });
 
     const response = NextResponse.json({
       items: results,
