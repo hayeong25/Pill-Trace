@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByIngredient, parseIngredients, findSimilarDrugs, extractItems } from '@/lib/api';
+import { searchDrugsByIngredient, getEasyDrugInfo, parseIngredients, findSimilarDrugs, extractItems } from '@/lib/api';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -26,8 +26,28 @@ export async function GET(request: NextRequest) {
       ingredients: parseIngredients(String(drug.ITEM_INGR_NAME || ''), String((drug as Record<string, unknown>).ITEM_NAME || '')),
     }));
 
+    const sliced = results.slice(0, 20);
+
+    const easySeqs = new Set<string>();
+    const uniqueNames = Array.from(new Set(sliced.map(d => String((d as Record<string, unknown>).ITEM_NAME || ''))));
+    const easyChecks = await Promise.all(
+      uniqueNames.map(name => getEasyDrugInfo(name, { numOfRows: 1 }).catch(() => null))
+    );
+    for (const easyData of easyChecks) {
+      if (!easyData) continue;
+      const { items: easyItems } = extractItems(easyData);
+      for (const item of easyItems) {
+        easySeqs.add(String(item.itemSeq || ''));
+      }
+    }
+
+    const enriched = sliced.map(drug => ({
+      ...drug,
+      hasEasyInfo: easySeqs.has(String((drug as Record<string, unknown>).ITEM_SEQ || '')),
+    }));
+
     const response = NextResponse.json({
-      items: results.slice(0, 20),
+      items: enriched,
       totalCount: results.length,
     });
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');

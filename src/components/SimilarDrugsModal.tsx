@@ -181,6 +181,7 @@ export default function SimilarDrugsModal({
                 chart={drug.CHART}
                 storageMethod={drug.STORAGE_METHOD}
                 similarity={drug.similarity}
+                hasEasyInfo={drug.hasEasyInfo}
               />
             ))}
           </div>
