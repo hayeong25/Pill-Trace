@@ -3,7 +3,7 @@ import { ParsedIngredient } from '@/types/drug';
 const API_KEY = process.env.DATA_GO_KR_API_KEY || '';
 const API_TIMEOUT = 10000;
 
-const DRUG_PERMIT_BASE = 'https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnDtlInq07';
+const DRUG_PERMIT_BASE = 'https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07';
 const EASY_DRUG_BASE = 'https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList';
 
 function fetchWithTimeout(url: string, timeout = API_TIMEOUT): Promise<Response> {
@@ -27,6 +27,17 @@ async function fetchJson(url: string, timeout = API_TIMEOUT) {
 interface FetchOptions {
   pageNo?: number;
   numOfRows?: number;
+}
+
+function buildApiUrl(base: string, extraParams: Record<string, string>): string {
+  const params = new URLSearchParams({
+    pageNo: extraParams.pageNo || '1',
+    numOfRows: extraParams.numOfRows || '100',
+    type: 'json',
+    ...extraParams,
+  });
+  // serviceKey must not be double-encoded — append it raw
+  return `${base}?serviceKey=${API_KEY}&${params.toString()}`;
 }
 
 interface ApiResponse {
@@ -60,46 +71,53 @@ export function extractItems(data: ApiResponse): { items: Record<string, unknown
 
 export async function searchDrugsByName(itemName: string, options: FetchOptions = {}) {
   const { pageNo = 1, numOfRows = 100 } = options;
-  const params = new URLSearchParams({
-    serviceKey: API_KEY,
+  const url = buildApiUrl(DRUG_PERMIT_BASE, {
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
-    type: 'json',
     item_name: itemName,
   });
-
-  return fetchJson(`${DRUG_PERMIT_BASE}?${params.toString()}`);
+  return fetchJson(url);
 }
 
 export async function searchDrugsByIngredient(materialName: string, options: FetchOptions = {}) {
   const { pageNo = 1, numOfRows = 100 } = options;
-  const params = new URLSearchParams({
-    serviceKey: API_KEY,
+  const url = buildApiUrl(DRUG_PERMIT_BASE, {
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
-    type: 'json',
     item_ingr_name: materialName,
   });
-
-  return fetchJson(`${DRUG_PERMIT_BASE}?${params.toString()}`);
+  return fetchJson(url);
 }
 
 export async function getEasyDrugInfo(itemName: string, options: FetchOptions = {}) {
   const { pageNo = 1, numOfRows = 100 } = options;
-  const params = new URLSearchParams({
-    serviceKey: API_KEY,
+  const url = buildApiUrl(EASY_DRUG_BASE, {
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
-    type: 'json',
     itemName: itemName,
   });
-
-  return fetchJson(`${EASY_DRUG_BASE}?${params.toString()}`);
+  return fetchJson(url);
 }
 
-export function parseIngredients(materialName: string): ParsedIngredient[] {
-  if (!materialName) return [];
+export function parseIngredients(ingredientName: string): ParsedIngredient[] {
+  if (!ingredientName) return [];
 
+  // ITEM_INGR_NAME format: "Ingredient1/Ingredient2/Ingredient3"
+  // MATERIAL_NAME format (legacy): "총량 : ... | 유효성분 : name1 amount1; name2 amount2 | 첨가제 : ..."
+  if (ingredientName.includes('|') || ingredientName.includes('총량') || ingredientName.includes('유효성분')) {
+    return parseMaterialName(ingredientName);
+  }
+
+  const parts = ingredientName.split('/').map(s => s.trim()).filter(Boolean);
+  return parts.map(part => ({
+    name: part.replace(/\s*\(.*?\)\s*/g, '').trim(),
+    amount: '',
+    unit: '',
+    raw: part,
+  }));
+}
+
+function parseMaterialName(materialName: string): ParsedIngredient[] {
   const sections = materialName.split(/[|]/).map(s => s.trim()).filter(Boolean);
 
   const ingredientParts: string[] = [];
@@ -148,11 +166,11 @@ export function findSimilarDrugs(
   return allDrugs
     .filter(drug => String(drug.ITEM_SEQ || '') !== excludeSeq)
     .map(drug => {
-      const materialName = String(drug.MATERIAL_NAME || '');
-      const drugIngredients = parseIngredients(materialName).map(i => i.name.toLowerCase().trim());
+      const ingredientName = String(drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || '');
+      const drugIngredients = parseIngredients(ingredientName).map(i => i.name.toLowerCase().trim());
       const matchCount = drugIngredients.filter(i => targetSet.has(i)).length;
       const similarity = targetSet.size > 0 ? matchCount / Math.max(targetSet.size, drugIngredients.length) : 0;
-      return { ...drug, similarity, matchCount, MATERIAL_NAME: materialName };
+      return { ...drug, similarity, matchCount, ITEM_INGR_NAME: ingredientName };
     })
     .filter(drug => drug.matchCount > 0)
     .sort((a, b) => b.similarity - a.similarity);
