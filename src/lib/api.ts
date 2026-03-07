@@ -99,18 +99,41 @@ export async function getEasyDrugInfo(itemName: string, options: FetchOptions = 
   return fetchJson(url);
 }
 
-export function parseIngredients(ingredientName: string): ParsedIngredient[] {
+export function extractKoreanIngredients(itemName: string): string[] {
+  const match = itemName.match(/\(([^)]+)\)\s*$/);
+  if (!match) return [];
+
+  const content = match[1];
+  // Skip non-ingredient parentheticals like "수출명:..." or pure numbers
+  if (/^(수출명|수출용|변경|구\s)/.test(content)) return [];
+
+  return content.split(/[·\/,]/).map(s => s.trim()).filter(Boolean);
+}
+
+export function parseIngredients(ingredientName: string, itemName?: string): ParsedIngredient[] {
   if (!ingredientName) return [];
 
-  // ITEM_INGR_NAME format: "Ingredient1/Ingredient2/Ingredient3"
   // MATERIAL_NAME format (legacy): "총량 : ... | 유효성분 : name1 amount1; name2 amount2 | 첨가제 : ..."
   if (ingredientName.includes('|') || ingredientName.includes('총량') || ingredientName.includes('유효성분')) {
     return parseMaterialName(ingredientName);
   }
 
+  // ITEM_INGR_NAME format: "Ingredient1/Ingredient2/Ingredient3"
   const parts = ingredientName.split('/').map(s => s.trim()).filter(Boolean);
-  return parts.map(part => ({
+  const koreanNames = itemName ? extractKoreanIngredients(itemName) : [];
+
+  // Deduplicate ingredients (API sometimes returns same ingredient twice)
+  const seen = new Set<string>();
+  const uniqueParts = parts.filter(part => {
+    const key = part.replace(/\s*\(.*?\)\s*/g, '').trim().toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return uniqueParts.map((part, idx) => ({
     name: part.replace(/\s*\(.*?\)\s*/g, '').trim(),
+    nameKo: koreanNames.length === uniqueParts.length ? koreanNames[idx] : (koreanNames.length === 1 && uniqueParts.length === 1 ? koreanNames[0] : ''),
     amount: '',
     unit: '',
     raw: part,
@@ -138,18 +161,13 @@ function parseMaterialName(materialName: string): ParsedIngredient[] {
 
   return ingredientParts.map(part => {
     const amountMatch = part.match(/^(.+?)\s+([\d,.]+\s*[a-zA-Zμ㎍㎎㎖%]+.*)$/);
-    if (amountMatch) {
-      return {
-        name: amountMatch[1].replace(/\s*\(.*?\)\s*/g, '').trim(),
-        amount: amountMatch[2].trim(),
-        unit: '',
-        raw: part,
-      };
-    }
-
+    const name = amountMatch
+      ? amountMatch[1].replace(/\s*\(.*?\)\s*/g, '').trim()
+      : part.replace(/\s*\(.*?\)\s*/g, '').trim();
     return {
-      name: part.replace(/\s*\(.*?\)\s*/g, '').trim(),
-      amount: '',
+      name,
+      nameKo: /[가-힣]/.test(name) ? name : '',
+      amount: amountMatch ? amountMatch[2].trim() : '',
       unit: '',
       raw: part,
     };

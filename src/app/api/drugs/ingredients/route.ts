@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     const results = items.map((item) => ({
       ...item,
-      ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || '')),
+      ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || ''), String(item.ITEM_NAME || '')),
     }));
 
     const response = NextResponse.json({

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     const results = similar.map(drug => ({
       ...drug,
-      ingredients: parseIngredients(String(drug.ITEM_INGR_NAME || '')),
+      ingredients: parseIngredients(String(drug.ITEM_INGR_NAME || ''), String((drug as Record<string, unknown>).ITEM_NAME || '')),
     }));
 
     const response = NextResponse.json({

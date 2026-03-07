@@ -38,6 +38,7 @@ export interface EasyDrugInfo {
 
 export interface ParsedIngredient {
   name: string;
+  nameKo: string;
   amount: string;
   unit: string;
   raw: string;
