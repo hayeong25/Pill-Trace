@@ -129,8 +129,7 @@ export default memo(function DrugCard({
               <p className="text-sm text-gray-400 mt-0.5">{entpName}</p>
               {maxPrice && (
                 <p className="text-sm font-semibold text-emerald-600 mt-1">
-                  {Number(maxPrice).toLocaleString()}원
-                  <span className="text-xs font-normal text-gray-400 ml-1">(보험 상한가)</span>
+                  약 {Number(maxPrice).toLocaleString()}원
                 </p>
               )}
             </div>
