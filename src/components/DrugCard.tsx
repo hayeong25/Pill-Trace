@@ -60,6 +60,7 @@ export default memo(function DrugCard({
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState(false);
+  const [noDetailData, setNoDetailData] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showAllIngredients, setShowAllIngredients] = useState(false);
 
@@ -74,7 +75,12 @@ export default memo(function DrugCard({
       const params = new URLSearchParams({ name: itemName });
       const res = await fetch(`/api/drugs/easy?${params}`);
       const data = await res.json();
-      setEasyInfo(data.item || null);
+      if (data.item) {
+        setEasyInfo(data.item);
+      } else {
+        setNoDetailData(true);
+        setIsDetailOpen(false);
+      }
     } catch {
       setDetailError(true);
     } finally {
@@ -92,7 +98,9 @@ export default memo(function DrugCard({
       await fetchEasyInfo();
     }
 
-    setIsDetailOpen(true);
+    if (!noDetailData) {
+      setIsDetailOpen(true);
+    }
   };
 
   const handleRetryDetail = async () => {
@@ -189,26 +197,28 @@ export default memo(function DrugCard({
       )}
 
       <div className="flex gap-2">
-        <button
-          onClick={handleToggleDetail}
-          aria-expanded={isDetailOpen}
-          aria-label={`${itemName} 상세 정보 ${isDetailOpen ? '접기' : '펼치기'}`}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors"
-        >
-          {isDetailLoading ? (
-            <>
-              <div className="w-3.5 h-3.5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
-              로딩 중
-            </>
-          ) : (
-            <>
-              <svg className={`w-4 h-4 transition-transform ${isDetailOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-              {isDetailOpen ? '접기' : '상세 정보'}
-            </>
-          )}
-        </button>
+        {!noDetailData && (
+          <button
+            onClick={handleToggleDetail}
+            aria-expanded={isDetailOpen}
+            aria-label={`${itemName} 상세 정보 ${isDetailOpen ? '접기' : '펼치기'}`}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors"
+          >
+            {isDetailLoading ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+                로딩 중
+              </>
+            ) : (
+              <>
+                <svg className={`w-4 h-4 transition-transform ${isDetailOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+                {isDetailOpen ? '접기' : '상세 정보'}
+              </>
+            )}
+          </button>
+        )}
         {onFindSimilar && (
           <button
             onClick={onFindSimilar}
@@ -253,11 +263,7 @@ export default memo(function DrugCard({
                     다시 시도
                   </button>
                 </div>
-              ) : (
-                <div className="text-center py-6 text-gray-400 text-sm bg-gray-50 rounded-xl">
-                  이 약품의 상세 정보가 등록되어 있지 않습니다.
-                </div>
-              )}
+              ) : null}
             </div>
           )}
         </div>
