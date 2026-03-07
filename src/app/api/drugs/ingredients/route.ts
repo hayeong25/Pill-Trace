@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByIngredient, parseIngredients, extractItems } from '@/lib/api';
+import { searchDrugsByIngredient, getEasyDrugInfo, parseIngredients, extractItems } from '@/lib/api';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -19,9 +19,21 @@ export async function GET(request: NextRequest) {
 
     const { items, totalCount, pageNo, numOfRows } = extractItems(data);
 
+    // Collect unique drug names to batch-check easy drug info
+    const uniqueNames = Array.from(new Set(items.map(item => String(item.ITEM_NAME || ''))));
+    const easyChecks = await Promise.all(
+      uniqueNames.map(name =>
+        getEasyDrugInfo(name, { numOfRows: 1 })
+          .then(d => { const { items: ei } = extractItems(d); return { name, seq: ei.length > 0 ? String(ei[0].itemSeq || '') : '' }; })
+          .catch(() => ({ name, seq: '' }))
+      )
+    );
+    const easySeqs = new Set(easyChecks.map(c => c.seq).filter(Boolean));
+
     const results = items.map((item) => ({
       ...item,
       ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || ''), String(item.ITEM_NAME || '')),
+      hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
     }));
 
     const response = NextResponse.json({

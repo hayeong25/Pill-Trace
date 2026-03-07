@@ -15,6 +15,7 @@ interface DrugCardProps {
   imageUrl?: string;
   similarity?: number;
   searchQuery?: string;
+  hasEasyInfo?: boolean;
   onFindSimilar?: () => void;
 }
 
@@ -54,13 +55,13 @@ export default memo(function DrugCard({
   imageUrl,
   similarity,
   searchQuery,
+  hasEasyInfo = true,
   onFindSimilar,
 }: DrugCardProps) {
   const [easyInfo, setEasyInfo] = useState<EasyDrugInfo | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState(false);
-  const [noDetailData, setNoDetailData] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showAllIngredients, setShowAllIngredients] = useState(false);
 
@@ -75,12 +76,7 @@ export default memo(function DrugCard({
       const params = new URLSearchParams({ name: itemName });
       const res = await fetch(`/api/drugs/easy?${params}`);
       const data = await res.json();
-      if (data.item) {
-        setEasyInfo(data.item);
-      } else {
-        setNoDetailData(true);
-        setIsDetailOpen(false);
-      }
+      setEasyInfo(data.item || null);
     } catch {
       setDetailError(true);
     } finally {
@@ -98,9 +94,7 @@ export default memo(function DrugCard({
       await fetchEasyInfo();
     }
 
-    if (!noDetailData) {
-      setIsDetailOpen(true);
-    }
+    setIsDetailOpen(true);
   };
 
   const handleRetryDetail = async () => {
@@ -197,7 +191,7 @@ export default memo(function DrugCard({
       )}
 
       <div className="flex gap-2">
-        {!noDetailData && (
+        {hasEasyInfo && (
           <button
             onClick={handleToggleDetail}
             aria-expanded={isDetailOpen}

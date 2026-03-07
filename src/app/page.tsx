@@ -310,6 +310,7 @@ export default function Home() {
                         storageMethod={drug.STORAGE_METHOD}
                         imageUrl={drug.BIG_PRDT_IMG_URL}
                         searchQuery={currentQuery}
+                        hasEasyInfo={drug.hasEasyInfo}
                         onFindSimilar={() => handleFindSimilar(drug)}
                       />
                     ))}

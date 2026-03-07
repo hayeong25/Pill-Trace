@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByName, parseIngredients, extractItems } from '@/lib/api';
+import { searchDrugsByName, getEasyDrugInfo, parseIngredients, extractItems } from '@/lib/api';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -12,16 +12,25 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data = await searchDrugsByName(query, {
-      pageNo: page,
-      numOfRows: 20,
-    });
+    const [data, easyData] = await Promise.all([
+      searchDrugsByName(query, { pageNo: page, numOfRows: 20 }),
+      getEasyDrugInfo(query, { numOfRows: 100 }).catch(() => null),
+    ]);
 
     const { items, totalCount, pageNo, numOfRows } = extractItems(data);
+
+    const easySeqs = new Set<string>();
+    if (easyData) {
+      const { items: easyItems } = extractItems(easyData);
+      for (const item of easyItems) {
+        easySeqs.add(String(item.itemSeq || ''));
+      }
+    }
 
     const results = items.map((item) => ({
       ...item,
       ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || ''), String(item.ITEM_NAME || '')),
+      hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
     }));
 
     const response = NextResponse.json({

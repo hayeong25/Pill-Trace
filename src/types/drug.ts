@@ -55,6 +55,7 @@ export interface DrugSearchResult {
   ITEM_PERMIT_DATE: string;
   BIG_PRDT_IMG_URL: string;
   ingredients: ParsedIngredient[];
+  hasEasyInfo: boolean;
 }
 
 export interface SearchResponse {
