@@ -9,6 +9,7 @@ export const BATCH_CONCURRENCY = 5;
 export const MAX_SIMILAR_RESULTS = 20;
 export const MAX_QUERY_LENGTH = 100;
 export const MAX_PAGE = 500;
+const API_MAX_ROWS = 100;
 
 if (!API_KEY && typeof window === 'undefined') {
   console.warn('[Pill Trace] DATA_GO_KR_API_KEY is not set. API calls will fail.');
@@ -103,7 +104,7 @@ export function extractItems(data: ApiResponse): { items: Record<string, unknown
 }
 
 export async function searchDrugsByName(itemName: string, options: FetchOptions = {}) {
-  const { pageNo = 1, numOfRows = 100 } = options;
+  const { pageNo = 1, numOfRows = API_MAX_ROWS } = options;
   const url = buildApiUrl(DRUG_PERMIT_BASE, {
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
@@ -113,7 +114,7 @@ export async function searchDrugsByName(itemName: string, options: FetchOptions 
 }
 
 export async function searchDrugsByIngredient(materialName: string, options: FetchOptions = {}) {
-  const { pageNo = 1, numOfRows = 100 } = options;
+  const { pageNo = 1, numOfRows = API_MAX_ROWS } = options;
   const url = buildApiUrl(DRUG_PERMIT_BASE, {
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
@@ -123,7 +124,7 @@ export async function searchDrugsByIngredient(materialName: string, options: Fet
 }
 
 export async function getEasyDrugInfo(itemName: string, options: FetchOptions = {}) {
-  const { pageNo = 1, numOfRows = 100 } = options;
+  const { pageNo = 1, numOfRows = API_MAX_ROWS } = options;
   const url = buildApiUrl(EASY_DRUG_BASE, {
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
@@ -133,7 +134,7 @@ export async function getEasyDrugInfo(itemName: string, options: FetchOptions = 
 }
 
 export async function getDrugPriceInfo(itemName: string, options: FetchOptions = {}) {
-  const { pageNo = 1, numOfRows = 100 } = options;
+  const { pageNo = 1, numOfRows = API_MAX_ROWS } = options;
   const url = buildApiUrl(DRUG_PRICE_BASE, {
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
