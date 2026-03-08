@@ -88,4 +88,12 @@ describe('formatPermitDate', () => {
   it('formats another 8-digit date', () => {
     expect(formatPermitDate('19991231')).toBe('1999.12.31');
   });
+
+  it('returns 9-digit string as-is', () => {
+    expect(formatPermitDate('202301150')).toBe('202301150');
+  });
+
+  it('returns alphabetic string as-is', () => {
+    expect(formatPermitDate('abcdefgh')).toBe('abcdefgh');
+  });
 });
