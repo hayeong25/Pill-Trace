@@ -216,6 +216,7 @@ export default function SimilarDrugsModal({
                 permitDate={drug.ITEM_PERMIT_DATE}
                 chart={drug.CHART}
                 storageMethod={drug.STORAGE_METHOD}
+                imageUrl={drug.BIG_PRDT_IMG_URL}
                 similarity={drug.similarity}
                 hasEasyInfo={drug.hasEasyInfo}
                 maxPrice={drug.maxPrice}
