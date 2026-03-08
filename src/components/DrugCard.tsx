@@ -129,7 +129,7 @@ export default memo(function DrugCard({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-gray-300 transition-all">
+    <article className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-gray-300 transition-all">
       <div className="flex gap-4">
         <div className="flex-shrink-0">
           {imageUrl?.trim() && !imageError ? (
@@ -316,6 +316,6 @@ export default memo(function DrugCard({
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 });
