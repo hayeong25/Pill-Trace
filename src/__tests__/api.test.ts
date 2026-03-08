@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseIngredients, extractKoreanIngredients, findSimilarDrugs, extractItems, batchedAll } from '@/lib/api';
+import { parseIngredients, extractKoreanIngredients, findSimilarDrugs, extractItems, batchedAll, DEFAULT_PAGE_SIZE } from '@/lib/api';
 
 describe('parseIngredients', () => {
   it('parses slash-separated ITEM_INGR_NAME format', () => {
@@ -224,7 +224,7 @@ describe('edge cases', () => {
     const result = extractItems(data);
     expect(result.totalCount).toBe(0);
     expect(result.pageNo).toBe(1);
-    expect(result.numOfRows).toBe(20);
+    expect(result.numOfRows).toBe(DEFAULT_PAGE_SIZE);
   });
 
   it('findSimilarDrugs calculates similarity correctly for full match', () => {
