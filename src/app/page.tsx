@@ -330,7 +330,7 @@ export default function Home() {
                 </h2>
                 <span className={`px-2.5 py-0.5 rounded-full text-sm font-medium ${
                   currentMode === 'ingredient' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
-                }`} aria-live="polite">
+                }`}>
                   {results.totalCount.toLocaleString()}건
                 </span>
                 <span className="text-sm text-gray-400">
