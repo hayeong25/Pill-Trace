@@ -38,6 +38,18 @@ describe('parseIngredients', () => {
     const result = parseIngredients('Acetaminophen (USP)');
     expect(result[0].name).toBe('Acetaminophen');
   });
+
+  it('parses pipe-separated format without headers', () => {
+    const result = parseIngredients('성분A 100mg; 성분B 200mg | 성분C 50mg');
+    expect(result).toHaveLength(3);
+  });
+
+  it('handles Korean ingredient names with amounts', () => {
+    const result = parseIngredients('유효성분 : 아세트아미노펜 500mg');
+    expect(result[0].name).toBe('아세트아미노펜');
+    expect(result[0].amount).toBe('500mg');
+    expect(result[0].nameKo).toBe('아세트아미노펜');
+  });
 });
 
 describe('extractKoreanIngredients', () => {
@@ -124,6 +136,19 @@ describe('extractItems', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = extractItems({} as any);
     expect(result.items).toHaveLength(0);
+  });
+
+  it('handles body with null items', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data = { body: { items: null as any, totalCount: 0 } };
+    const result = extractItems(data);
+    expect(result.items).toHaveLength(0);
+  });
+
+  it('passes through resultCode 00 as success', () => {
+    const data = { header: { resultCode: '00' }, body: { items: [{ name: 'test' }], totalCount: 1 } };
+    const result = extractItems(data);
+    expect(result.items).toHaveLength(1);
   });
 });
 
