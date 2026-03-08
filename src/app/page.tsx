@@ -2,12 +2,14 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import SearchBar from '@/components/SearchBar';
 import DrugCard from '@/components/DrugCard';
 import DrugCardSkeleton from '@/components/DrugCardSkeleton';
 import Pagination from '@/components/Pagination';
-import SimilarDrugsModal from '@/components/SimilarDrugsModal';
 import { DrugSearchResult, SearchResponse } from '@/types/drug';
+
+const SimilarDrugsModal = dynamic(() => import('@/components/SimilarDrugsModal'), { ssr: false });
 
 interface ModalState {
   isOpen: boolean;
