@@ -216,7 +216,7 @@ export default function Home() {
               </div>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
                 {STEPS.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
+                  <div key={item.step} className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
                       {item.step}
                     </div>
@@ -236,9 +236,9 @@ export default function Home() {
 
             {/* Feature Cards */}
             <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-in-up-delay-3">
-              {FEATURES.map((feature, idx) => (
+              {FEATURES.map((feature) => (
                 <div
-                  key={idx}
+                  key={feature.title}
                   className={`bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg ${feature.hoverBorder} transition-all group`}
                 >
                   <div className={`w-12 h-12 rounded-xl ${feature.iconBg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
