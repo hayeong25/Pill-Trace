@@ -7,11 +7,13 @@ export async function GET(request: NextRequest) {
   if (rateLimitRes) return rateLimitRes;
 
   const { searchParams } = new URL(request.url);
-  const itemName = searchParams.get('name');
+  const rawName = (searchParams.get('name') || '').trim();
 
-  if (!itemName || itemName.length > 200) {
+  if (!rawName || rawName.length > 200) {
     return NextResponse.json({ error: '약품명이 필요합니다. (최대 200자)' }, { status: 400 });
   }
+
+  const itemName = rawName;
 
   try {
     const data = await getDrugPriceInfo(itemName, { numOfRows: 10 });
