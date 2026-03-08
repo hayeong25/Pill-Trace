@@ -77,9 +77,11 @@ export default function SimilarDrugsModal({
 
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
       document.body.style.overflow = 'hidden';
       // Auto-focus close button for keyboard users
       setTimeout(() => closeButtonRef.current?.focus(), 50);
@@ -115,6 +117,8 @@ export default function SimilarDrugsModal({
       return () => {
         document.body.style.overflow = '';
         window.removeEventListener('keydown', handleKeyDown);
+        // Restore focus to the element that opened the modal
+        previousFocusRef.current?.focus();
       };
     } else {
       document.body.style.overflow = '';
