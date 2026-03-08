@@ -358,8 +358,11 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => handleSearch(currentQuery, currentMode === 'drug' ? 'ingredient' : 'drug')}
-                    className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors"
+                    className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors"
                   >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
                     {currentMode === 'drug' ? '성분으로 검색해보기' : '약 이름으로 검색해보기'}
                   </button>
                 </div>
