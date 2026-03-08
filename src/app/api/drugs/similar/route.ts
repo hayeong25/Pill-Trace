@@ -69,11 +69,23 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const enriched = sliced.map(drug => ({
-      ...drug,
-      hasEasyInfo: easySeqs.has(str(drug.ITEM_SEQ)),
-      maxPrice: priceMap.get(str(drug.ITEM_NAME)) || '',
-    }));
+    const enriched = sliced.map(drug => {
+      const d = drug as Record<string, unknown>;
+      return {
+        ITEM_SEQ: drug.ITEM_SEQ,
+        ITEM_NAME: drug.ITEM_NAME,
+        ENTP_NAME: drug.ENTP_NAME,
+        ITEM_INGR_NAME: drug.ITEM_INGR_NAME,
+        CHART: str(d.CHART),
+        STORAGE_METHOD: str(d.STORAGE_METHOD),
+        ITEM_PERMIT_DATE: str(d.ITEM_PERMIT_DATE),
+        BIG_PRDT_IMG_URL: str(d.BIG_PRDT_IMG_URL),
+        ingredients: drug.ingredients,
+        similarity: drug.similarity,
+        hasEasyInfo: easySeqs.has(drug.ITEM_SEQ),
+        maxPrice: priceMap.get(drug.ITEM_NAME) || '',
+      };
+    });
 
     return cachedJson({ items: enriched, totalCount: results.length });
   } catch (error) {
