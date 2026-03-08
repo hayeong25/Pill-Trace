@@ -77,6 +77,7 @@ export default memo(function DrugCard({
     try {
       const params = new URLSearchParams({ name: itemName });
       const res = await fetch(`/api/drugs/easy?${params}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setEasyInfo(data.item || null);
     } catch {

@@ -48,6 +48,7 @@ export default function SimilarDrugsModal({
           exclude: excludeSeq,
         });
         const res = await fetch(`/api/drugs/similar?${params}`, { signal: controller.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
         if (data.error) {
