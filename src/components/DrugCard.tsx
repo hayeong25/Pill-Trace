@@ -125,10 +125,10 @@ export default memo(function DrugCard({
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start">
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-gray-900 truncate">
+              <h3 className="text-base font-bold text-gray-900 truncate" title={itemName}>
                 <HighlightText text={itemName} query={searchQuery} />
               </h3>
-              <p className="text-sm text-gray-400 mt-0.5">{entpName}</p>
+              <p className="text-sm text-gray-400 mt-0.5 truncate" title={entpName}>{entpName}</p>
               {maxPrice && !isNaN(Number(maxPrice)) && (
                 <p className="text-sm font-semibold text-emerald-600 mt-1">
                   약 {Number(maxPrice).toLocaleString()}원
