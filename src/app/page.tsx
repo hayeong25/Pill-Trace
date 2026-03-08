@@ -299,7 +299,7 @@ export default function Home() {
           </div>
 
           {isLoading && (
-            <div>
+            <div role="status" aria-label="검색 결과 로딩 중">
               <div className="flex items-center gap-3 mb-5">
                 <div className="h-6 w-20 bg-gray-200 rounded animate-pulse" />
                 <div className="h-6 w-12 bg-gray-100 rounded-full animate-pulse" />

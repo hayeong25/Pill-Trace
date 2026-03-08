@@ -160,7 +160,7 @@ export default function SimilarDrugsModal({
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(85vh-76px)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(85vh-76px)]" aria-busy={isLoading}>
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="status" aria-label="유사 약품 검색 중">
               {Array.from({ length: 4 }).map((_, i) => (
