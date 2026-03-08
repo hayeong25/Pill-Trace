@@ -180,6 +180,7 @@ export default memo(function DrugCard({
                     {...(onIngredientClick ? {
                       type: 'button' as const,
                       onClick: () => onIngredientClick(displayName),
+                      'aria-label': `${displayName} 성분으로 검색`,
                     } : {})}
                     className={`inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium ${
                       onIngredientClick ? 'hover:bg-blue-100 cursor-pointer transition-colors' : ''
@@ -253,6 +254,7 @@ export default memo(function DrugCard({
           <button
             onClick={onFindSimilar}
             aria-label={`${itemName}과 유사한 약품 찾기`}
+            aria-haspopup="dialog"
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
