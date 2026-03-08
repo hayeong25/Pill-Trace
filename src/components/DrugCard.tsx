@@ -197,7 +197,7 @@ export default memo(function DrugCard({
         </div>
       )}
 
-      <div className="flex gap-2">
+      {(hasEasyInfo || onFindSimilar) && <div className="flex gap-2">
         {hasEasyInfo && (
           <button
             onClick={handleToggleDetail}
@@ -232,7 +232,7 @@ export default memo(function DrugCard({
             유사 약품
           </button>
         )}
-      </div>
+      </div>}
 
       <div className="detail-expand" data-open={isDetailOpen}>
         <div className="detail-expand-inner">

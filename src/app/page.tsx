@@ -238,7 +238,7 @@ export default function Home() {
 
       {/* Search Results Mode */}
       {!showHero && (
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto px-4 py-8" role="region" aria-label="검색 결과" aria-busy={isLoading}>
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
               <button
@@ -282,7 +282,7 @@ export default function Home() {
                 <h2 className="text-lg font-bold text-gray-900">
                   검색 결과
                 </h2>
-                <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium" aria-live="polite">
                   {results.totalCount.toLocaleString()}건
                 </span>
               </div>
