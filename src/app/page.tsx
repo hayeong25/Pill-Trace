@@ -183,7 +183,7 @@ export default function Home() {
     const params = new URLSearchParams({ q: query });
     if (mode !== 'drug') params.set('mode', mode);
     router.push(`/?${params.toString()}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   }, [router]);
 
   const handlePageChange = useCallback((page: number) => {
@@ -191,7 +191,7 @@ export default function Home() {
     if (currentMode !== 'drug') params.set('mode', currentMode);
     if (page > 1) params.set('page', String(page));
     router.push(`/?${params.toString()}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   }, [router, currentQuery, currentMode]);
 
   const handleGoHome = useCallback(() => {
