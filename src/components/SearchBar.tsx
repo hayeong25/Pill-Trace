@@ -75,6 +75,13 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
     }
   }, []);
 
+  const handleModeChange = useCallback((newMode: SearchMode) => {
+    setMode(newMode);
+    if (compact && query.trim()) {
+      executeSearch(query.trim(), newMode);
+    }
+  }, [compact, query, executeSearch]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
@@ -94,7 +101,7 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
           type="button"
           role="radio"
           aria-checked={mode === 'drug'}
-          onClick={() => setMode('drug')}
+          onClick={() => handleModeChange('drug')}
           className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
             mode === 'drug'
               ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
@@ -110,7 +117,7 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
           type="button"
           role="radio"
           aria-checked={mode === 'ingredient'}
-          onClick={() => setMode('ingredient')}
+          onClick={() => handleModeChange('ingredient')}
           className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
             mode === 'ingredient'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200'
