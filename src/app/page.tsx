@@ -124,6 +124,9 @@ export default function Home() {
       fetchResults(currentQuery, currentMode, currentPage);
       document.title = `${currentQuery} - Pill Trace`;
     } else {
+      setHasSearched(false);
+      setResults(null);
+      setError('');
       document.title = 'Pill Trace - 의약품 성분 검색';
     }
     return () => {
