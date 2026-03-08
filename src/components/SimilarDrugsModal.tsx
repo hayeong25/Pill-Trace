@@ -65,7 +65,8 @@ export default function SimilarDrugsModal({
         }
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') return;
-        setError('유사 약품 검색 중 오류가 발생했습니다.');
+        const isNetworkError = err instanceof TypeError && err.message === 'Failed to fetch';
+        setError(isNetworkError ? '네트워크 연결을 확인해주세요.' : '유사 약품 검색 중 오류가 발생했습니다.');
       } finally {
         if (!controller.signal.aborted) {
           setIsLoading(false);
