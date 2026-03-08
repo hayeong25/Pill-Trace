@@ -1,6 +1,6 @@
 export default function DrugCardSkeleton() {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 animate-pulse">
+    <div className="bg-white border border-gray-200 rounded-2xl p-5 animate-pulse" aria-hidden="true">
       <div className="flex gap-4">
         <div className="w-20 h-20 bg-gray-100 rounded-xl flex-shrink-0" />
         <div className="flex-1 space-y-2">
