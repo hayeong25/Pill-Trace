@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
     return response;
   } catch (error) {
-    console.error('Similar drugs search error:', error);
+    console.error('[Pill Trace] Similar drugs search error:', error);
     const isTimeout = error instanceof Error && error.name === 'AbortError';
     return NextResponse.json(
       { error: isTimeout ? '검색 시간이 초과되었습니다. 다시 시도해주세요.' : '유사 약품 검색 중 오류가 발생했습니다.' },

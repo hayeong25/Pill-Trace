@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
     return response;
   } catch (error) {
-    console.error('Drug price info error:', error);
+    console.error('[Pill Trace] Drug price info error:', error);
     const isTimeout = error instanceof Error && error.name === 'AbortError';
     return NextResponse.json(
       { error: isTimeout ? '검색 시간이 초과되었습니다. 다시 시도해주세요.' : '약가 정보 조회 중 오류가 발생했습니다.' },
