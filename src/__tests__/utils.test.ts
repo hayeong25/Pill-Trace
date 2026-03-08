@@ -62,6 +62,10 @@ describe('stripHtmlTags', () => {
   it('decodes numeric HTML entities', () => {
     expect(stripHtmlTags('&#60;script&#62;')).toBe('<script>');
   });
+
+  it('decodes &apos; entity', () => {
+    expect(stripHtmlTags("it&apos;s")).toBe("it's");
+  });
 });
 
 describe('formatPermitDate', () => {
