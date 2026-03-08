@@ -19,7 +19,8 @@ interface DrugCardProps {
   hasEasyInfo?: boolean;
   maxPrice?: string;
   priority?: boolean;
-  onFindSimilar?: () => void;
+  itemSeq?: string;
+  onFindSimilar?: (itemSeq: string, itemName: string, materialName: string) => void;
   onIngredientClick?: (ingredient: string) => void;
 }
 
@@ -70,6 +71,7 @@ export default memo(function DrugCard({
   hasEasyInfo = true,
   maxPrice,
   priority = false,
+  itemSeq,
   onFindSimilar,
   onIngredientClick,
 }: DrugCardProps) {
@@ -261,9 +263,9 @@ export default memo(function DrugCard({
             )}
           </button>
         )}
-        {onFindSimilar && (
+        {onFindSimilar && itemSeq && (
           <button
-            onClick={onFindSimilar}
+            onClick={() => onFindSimilar(itemSeq, itemName, materialName)}
             aria-label={`${itemName}과 유사한 약품 찾기`}
             aria-haspopup="dialog"
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"

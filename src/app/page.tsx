@@ -8,7 +8,7 @@ import DrugCard from '@/components/DrugCard';
 import DrugCardErrorBoundary from '@/components/DrugCardErrorBoundary';
 import DrugCardSkeleton from '@/components/DrugCardSkeleton';
 import Pagination from '@/components/Pagination';
-import { DrugSearchResult, SearchResponse } from '@/types/drug';
+import { SearchResponse } from '@/types/drug';
 
 const SimilarDrugsModal = dynamic(() => import('@/components/SimilarDrugsModal'), { ssr: false });
 
@@ -214,12 +214,12 @@ export default function Home() {
     handleSearch(ingredient, 'ingredient');
   }, [handleSearch]);
 
-  const handleFindSimilar = useCallback((drug: DrugSearchResult) => {
+  const handleFindSimilar = useCallback((itemSeq: string, itemName: string, materialName: string) => {
     setModal({
       isOpen: true,
-      drugName: drug.ITEM_NAME,
-      materialName: drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || '',
-      excludeSeq: drug.ITEM_SEQ,
+      drugName: itemName,
+      materialName,
+      excludeSeq: itemSeq,
     });
   }, []);
 
@@ -415,7 +415,8 @@ export default function Home() {
                           hasEasyInfo={drug.hasEasyInfo}
                           maxPrice={drug.maxPrice}
                           priority={idx < 2}
-                          onFindSimilar={() => handleFindSimilar(drug)}
+                          itemSeq={drug.ITEM_SEQ}
+                          onFindSimilar={handleFindSimilar}
                           onIngredientClick={handleIngredientClick}
                         />
                       </DrugCardErrorBoundary>
