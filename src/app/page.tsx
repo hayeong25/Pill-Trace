@@ -131,23 +131,37 @@ export default function Home() {
     };
   }, [currentQuery, currentMode, currentPage, fetchResults]);
 
-  const handleSearch = (query: string, mode: 'drug' | 'ingredient') => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+        e.preventDefault();
+        const searchInput = document.querySelector<HTMLInputElement>('input[type="text"][enterkeyhint="search"]');
+        searchInput?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleSearch = useCallback((query: string, mode: 'drug' | 'ingredient') => {
     const params = new URLSearchParams({ q: query, mode, page: '1' });
     router.push(`/?${params.toString()}`);
-  };
+  }, [router]);
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     const params = new URLSearchParams({ q: currentQuery, mode: currentMode, page: String(page) });
     router.push(`/?${params.toString()}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [router, currentQuery, currentMode]);
 
-  const handleGoHome = () => {
+  const handleGoHome = useCallback(() => {
     router.push('/');
     setResults(null);
     setHasSearched(false);
     setError('');
-  };
+  }, [router]);
 
   const handleCloseModal = useCallback(() => {
     setModal(prev => ({ ...prev, isOpen: false }));
@@ -261,7 +275,7 @@ export default function Home() {
             </div>
           )}
 
-          {error && (
+          {error && !isLoading && (
             <div className="mt-4 text-center py-8 bg-red-50 rounded-2xl border border-red-100">
               <svg className="w-10 h-10 text-red-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
