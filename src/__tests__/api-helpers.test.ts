@@ -161,4 +161,11 @@ describe('mapDrugItem', () => {
     expect(result.ITEM_INGR_NAME).toBe('X/Y');
     expect(result.ingredients).toHaveLength(2);
   });
+
+  it('prefers ITEM_INGR_NAME over MATERIAL_NAME', () => {
+    const item = { ITEM_SEQ: '1', ITEM_NAME: 'Drug', ENTP_NAME: 'Corp', ITEM_INGR_NAME: 'A', MATERIAL_NAME: 'B/C' };
+    const result = mapDrugItem(item, new Set(), new Map());
+    expect(result.ITEM_INGR_NAME).toBe('A');
+    expect(result.ingredients).toHaveLength(1);
+  });
 });
