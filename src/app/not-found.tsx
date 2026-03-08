@@ -8,6 +8,7 @@ export default function NotFound() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
+      <p className="text-6xl font-bold text-gray-200 mb-4">404</p>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">페이지를 찾을 수 없습니다</h1>
       <p className="text-gray-400 mb-8 text-center">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
       <div className="flex gap-3">
