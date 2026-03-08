@@ -350,9 +350,9 @@ export default function Home() {
           {results && !isLoading && (
             <div>
               <div className="flex items-center gap-3 mb-5" aria-live="polite">
-                <h2 className="text-lg font-bold text-gray-900">
+                <h1 className="text-lg font-bold text-gray-900">
                   검색 결과
-                </h2>
+                </h1>
                 <span className={`px-2.5 py-0.5 rounded-full text-sm font-medium ${
                   currentMode === 'ingredient' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
                 }`}>
