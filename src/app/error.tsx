@@ -1,13 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function Error({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    console.error('[Pill Trace] Unhandled error:', error);
+  }, [error]);
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
       <div className="w-20 h-20 bg-red-50 rounded-2xl flex items-center justify-center mb-6">
