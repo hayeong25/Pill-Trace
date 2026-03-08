@@ -82,7 +82,7 @@ export default function Home() {
   const currentQuery = searchParams.get('q') || '';
   const modeParam = searchParams.get('mode');
   const currentMode: 'drug' | 'ingredient' = modeParam === 'ingredient' ? 'ingredient' : 'drug';
-  const currentPage = parseInt(searchParams.get('page') || '1', 10) || 1;
+  const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchResults = useCallback(async (query: string, mode: 'drug' | 'ingredient', page: number) => {
@@ -202,7 +202,7 @@ export default function Home() {
   }, [router]);
 
   const handleCloseModal = useCallback(() => {
-    setModal(prev => ({ ...prev, isOpen: false }));
+    setModal({ isOpen: false, drugName: '', materialName: '', excludeSeq: '' });
   }, []);
 
   const handleIngredientClick = useCallback((ingredient: string) => {

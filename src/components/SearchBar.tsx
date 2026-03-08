@@ -49,11 +49,8 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
 
   useEffect(() => {
     setQuery(initialQuery);
-  }, [initialQuery]);
-
-  useEffect(() => {
     setMode(initialMode);
-  }, [initialMode]);
+  }, [initialQuery, initialMode]);
 
   useEffect(() => {
     setRecentSearches(getRecentSearches());
