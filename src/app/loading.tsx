@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh]">
-      <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
+    <div className="flex flex-col items-center justify-center min-h-[60vh]" role="status" aria-label="페이지 로딩 중">
+      <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" aria-hidden="true" />
       <p className="mt-4 text-sm text-gray-400">로딩 중...</p>
     </div>
   );
