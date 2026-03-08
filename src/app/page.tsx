@@ -254,10 +254,10 @@ export default function Home() {
                 <span className="text-sm font-medium text-gray-400">이렇게 이용하세요</span>
                 <div className="h-px w-12 bg-gray-200" />
               </div>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+              <ol className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 list-none p-0 m-0">
                 {STEPS.map((item, idx) => (
-                  <div key={item.step} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  <li key={item.step} className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0" aria-hidden="true">
                       {item.step}
                     </div>
                     <div>
@@ -265,13 +265,13 @@ export default function Home() {
                       <p className="text-xs text-gray-400">{item.sub}</p>
                     </div>
                     {idx < STEPS.length - 1 && (
-                      <svg className="w-5 h-5 text-gray-300 hidden sm:block ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-gray-300 hidden sm:block ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     )}
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
 
             {/* Feature Cards */}
