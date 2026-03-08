@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     url: '/',
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Pill Trace - 의약품 성분 검색',
     description: '약 이름이나 성분으로 의약품을 검색하고, 동일/유사 성분의 약을 찾아보세요.',
   },
