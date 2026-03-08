@@ -24,7 +24,7 @@ interface DrugCardProps {
   onIngredientClick?: (ingredient: string) => void;
 }
 
-function HighlightText({ text, query }: { text: string; query?: string }) {
+const HighlightText = memo(function HighlightText({ text, query }: { text: string; query?: string }) {
   if (!query || !text) return <>{text}</>;
   const lowerText = text.toLowerCase();
   const lowerQuery = query.toLowerCase();
@@ -45,7 +45,7 @@ function HighlightText({ text, query }: { text: string; query?: string }) {
   }
   if (lastIndex < text.length) parts.push(text.slice(lastIndex));
   return <>{parts}</>;
-}
+});
 
 const DETAIL_SECTIONS = [
   { key: 'efcyQesitm', label: '효능효과', color: 'text-blue-700', bg: 'bg-blue-50', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
