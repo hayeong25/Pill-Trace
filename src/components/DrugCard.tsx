@@ -88,6 +88,7 @@ export default memo(function DrugCard({
   };
 
   const handleToggleDetail = async () => {
+    if (isDetailLoading) return;
     if (isDetailOpen) {
       setIsDetailOpen(false);
       return;
@@ -108,7 +109,7 @@ export default memo(function DrugCard({
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg hover:border-gray-300 transition-all">
       <div className="flex gap-4">
-        {imageUrl && !imageError && (
+        {imageUrl?.trim() && !imageError && (
           <div className="flex-shrink-0">
             <Image
               src={imageUrl}
