@@ -22,7 +22,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
     pages.push(i);
   }
 
-  const startItem = (currentPage - 1) * numOfRows + 1;
+  const startItem = Math.min((currentPage - 1) * numOfRows + 1, totalCount);
   const endItem = Math.min(currentPage * numOfRows, totalCount);
 
   return (
