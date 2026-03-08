@@ -67,9 +67,11 @@ export default function Home() {
 
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSlowLoading, setIsSlowLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [searchTime, setSearchTime] = useState(0);
+  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [modal, setModal] = useState<ModalState>({
     isOpen: false,
     drugName: '',
@@ -89,9 +91,12 @@ export default function Home() {
     abortControllerRef.current = controller;
 
     setIsLoading(true);
+    setIsSlowLoading(false);
     setError('');
     setHasSearched(true);
     setSearchTime(0);
+    if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+    slowTimerRef.current = setTimeout(() => setIsSlowLoading(true), 5000);
     const startTime = performance.now();
 
     try {
@@ -126,6 +131,8 @@ export default function Home() {
       setError('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
       setResults(null);
     } finally {
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+      setIsSlowLoading(false);
       setIsLoading(false);
     }
   }, []);
@@ -309,6 +316,9 @@ export default function Home() {
                 <div className="h-6 w-20 bg-gray-200 rounded animate-pulse" />
                 <div className="h-6 w-12 bg-gray-100 rounded-full animate-pulse" />
               </div>
+              {isSlowLoading && (
+                <p className="text-sm text-gray-400 mb-4">응답이 지연되고 있습니다. 잠시만 기다려주세요...</p>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <DrugCardSkeleton key={i} />
