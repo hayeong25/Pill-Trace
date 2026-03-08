@@ -15,7 +15,7 @@ export default function GlobalError({
   return (
     <html lang="ko">
       <body style={{ fontFamily: 'system-ui, sans-serif', background: '#f8fafc', color: '#0f172a' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '1rem' }}>
+        <div role="alert" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '1rem' }}>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>오류가 발생했습니다</h1>
           <p style={{ color: '#9ca3af', marginBottom: '2rem' }}>예상치 못한 오류가 발생했습니다. 다시 시도해주세요.</p>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
