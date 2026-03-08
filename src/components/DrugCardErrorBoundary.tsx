@@ -17,6 +17,10 @@ export default class DrugCardErrorBoundary extends Component<Props, State> {
     return { hasError: true };
   }
 
+  componentDidCatch(error: Error) {
+    console.error('[Pill Trace] DrugCard render error:', error);
+  }
+
   render() {
     if (this.state.hasError) {
       return (

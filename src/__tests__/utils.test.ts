@@ -83,6 +83,15 @@ describe('stripHtmlTags', () => {
   it('handles self-closing tags', () => {
     expect(stripHtmlTags('before<hr/>after')).toBe('beforeafter');
   });
+
+  it('handles real-world Korean drug info HTML', () => {
+    const html = '<p>이 약은 <b>해열</b>&middot;진통에 사용합니다.</p><p>두통, 치통</p>';
+    const result = stripHtmlTags(html);
+    expect(result).toContain('해열');
+    expect(result).toContain('진통에 사용합니다.');
+    expect(result).toContain('두통, 치통');
+    expect(result).not.toContain('<');
+  });
 });
 
 describe('formatPermitDate', () => {

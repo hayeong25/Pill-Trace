@@ -401,7 +401,7 @@ export default function Home() {
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {results.items.map((drug, idx) => (
-                      <DrugCardErrorBoundary key={`${drug.ITEM_SEQ}-${idx}`}>
+                      <DrugCardErrorBoundary key={drug.ITEM_SEQ}>
                         <DrugCard
                           itemName={drug.ITEM_NAME}
                           entpName={drug.ENTP_NAME}
