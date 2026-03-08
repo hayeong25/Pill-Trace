@@ -26,17 +26,12 @@ export async function GET(request: NextRequest) {
     const similar = findSimilarDrugs(targetNames, items, excludeSeq);
 
     const str = (val: unknown) => String(val || '');
-
-    const results = similar.map(drug => ({
-      ...drug,
-      ingredients: parseIngredients(drug.ITEM_INGR_NAME, str(drug.ITEM_NAME)),
-    }));
-
-    const sliced = results.slice(0, MAX_SIMILAR_RESULTS);
+    const totalCount = similar.length;
+    const sliced = similar.slice(0, MAX_SIMILAR_RESULTS);
 
     const easySeqs = new Set<string>();
     const priceMap = new Map<string, string>();
-    const uniqueNames = Array.from(new Set(sliced.map(d => str(d.ITEM_NAME))));
+    const uniqueNames = Array.from(new Set(sliced.map(d => d.ITEM_NAME)));
 
     const [easyChecks] = await Promise.all([
       batchedAll(
@@ -80,14 +75,14 @@ export async function GET(request: NextRequest) {
         STORAGE_METHOD: str(d.STORAGE_METHOD),
         ITEM_PERMIT_DATE: str(d.ITEM_PERMIT_DATE),
         BIG_PRDT_IMG_URL: str(d.BIG_PRDT_IMG_URL),
-        ingredients: drug.ingredients,
+        ingredients: parseIngredients(drug.ITEM_INGR_NAME, drug.ITEM_NAME),
         similarity: drug.similarity,
         hasEasyInfo: easySeqs.has(drug.ITEM_SEQ),
         maxPrice: priceMap.get(drug.ITEM_NAME) || '',
       };
     });
 
-    return cachedJson({ items: enriched, totalCount: results.length });
+    return cachedJson({ items: enriched, totalCount });
   } catch (error) {
     return handleApiError(error, '유사 약품 검색');
   }
