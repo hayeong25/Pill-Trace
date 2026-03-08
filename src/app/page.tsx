@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import SearchBar from '@/components/SearchBar';
 import DrugCard from '@/components/DrugCard';
+import DrugCardErrorBoundary from '@/components/DrugCardErrorBoundary';
 import DrugCardSkeleton from '@/components/DrugCardSkeleton';
 import Pagination from '@/components/Pagination';
 import { DrugSearchResult, SearchResponse } from '@/types/drug';
@@ -370,22 +371,23 @@ export default function Home() {
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {results.items.map((drug, idx) => (
-                      <DrugCard
-                        key={`${drug.ITEM_SEQ}-${idx}`}
-                        itemName={drug.ITEM_NAME}
-                        entpName={drug.ENTP_NAME}
-                        materialName={drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || ''}
-                        ingredients={drug.ingredients}
-                        permitDate={drug.ITEM_PERMIT_DATE}
-                        chart={drug.CHART}
-                        storageMethod={drug.STORAGE_METHOD}
-                        imageUrl={drug.BIG_PRDT_IMG_URL}
-                        searchQuery={currentQuery}
-                        hasEasyInfo={drug.hasEasyInfo}
-                        maxPrice={drug.maxPrice}
-                        onFindSimilar={() => handleFindSimilar(drug)}
-                        onIngredientClick={handleIngredientClick}
-                      />
+                      <DrugCardErrorBoundary key={`${drug.ITEM_SEQ}-${idx}`}>
+                        <DrugCard
+                          itemName={drug.ITEM_NAME}
+                          entpName={drug.ENTP_NAME}
+                          materialName={drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || ''}
+                          ingredients={drug.ingredients}
+                          permitDate={drug.ITEM_PERMIT_DATE}
+                          chart={drug.CHART}
+                          storageMethod={drug.STORAGE_METHOD}
+                          imageUrl={drug.BIG_PRDT_IMG_URL}
+                          searchQuery={currentQuery}
+                          hasEasyInfo={drug.hasEasyInfo}
+                          maxPrice={drug.maxPrice}
+                          onFindSimilar={() => handleFindSimilar(drug)}
+                          onIngredientClick={handleIngredientClick}
+                        />
+                      </DrugCardErrorBoundary>
                     ))}
                   </div>
 

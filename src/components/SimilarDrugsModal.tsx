@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import DrugCard from './DrugCard';
+import DrugCardErrorBoundary from './DrugCardErrorBoundary';
 import DrugCardSkeleton from './DrugCardSkeleton';
 import { DrugSearchResult } from '@/types/drug';
 
@@ -196,21 +197,22 @@ export default function SimilarDrugsModal({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {drugs.map((drug, idx) => (
-              <DrugCard
-                key={`${drug.ITEM_SEQ}-${idx}`}
-                itemName={drug.ITEM_NAME}
-                entpName={drug.ENTP_NAME}
-                materialName={drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || ''}
-                ingredients={drug.ingredients}
-                permitDate={drug.ITEM_PERMIT_DATE}
-                chart={drug.CHART}
-                storageMethod={drug.STORAGE_METHOD}
-                imageUrl={drug.BIG_PRDT_IMG_URL}
-                similarity={drug.similarity}
-                hasEasyInfo={drug.hasEasyInfo}
-                maxPrice={drug.maxPrice}
-                onIngredientClick={onIngredientClick}
-              />
+              <DrugCardErrorBoundary key={`${drug.ITEM_SEQ}-${idx}`}>
+                <DrugCard
+                  itemName={drug.ITEM_NAME}
+                  entpName={drug.ENTP_NAME}
+                  materialName={drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || ''}
+                  ingredients={drug.ingredients}
+                  permitDate={drug.ITEM_PERMIT_DATE}
+                  chart={drug.CHART}
+                  storageMethod={drug.STORAGE_METHOD}
+                  imageUrl={drug.BIG_PRDT_IMG_URL}
+                  similarity={drug.similarity}
+                  hasEasyInfo={drug.hasEasyInfo}
+                  maxPrice={drug.maxPrice}
+                  onIngredientClick={onIngredientClick}
+                />
+              </DrugCardErrorBoundary>
             ))}
           </div>
         </div>
