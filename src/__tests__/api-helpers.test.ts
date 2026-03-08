@@ -53,6 +53,12 @@ describe('checkRateLimit', () => {
     expect(result).toBeNull();
   });
 
+  it('falls back to "unknown" when x-forwarded-for is missing', () => {
+    const req = new NextRequest('http://localhost/api/test');
+    const result = checkRateLimit(req);
+    expect(result).toBeNull();
+  });
+
   it('returns 429 with no-store and Retry-After when limit exceeded', () => {
     const ip = '10.0.0.99';
     // Exhaust the rate limit (60 requests per minute)
