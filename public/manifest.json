@@ -8,6 +8,8 @@
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#2563eb",
+  "lang": "ko",
+  "categories": ["health", "medical"],
   "icons": [
     {
       "src": "/favicon.ico",
