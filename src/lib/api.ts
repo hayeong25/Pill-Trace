@@ -3,6 +3,10 @@ import { ParsedIngredient } from '@/types/drug';
 const API_KEY = process.env.DATA_GO_KR_API_KEY || '';
 const API_TIMEOUT = 10000;
 
+if (!API_KEY && typeof window === 'undefined') {
+  console.warn('[Pill Trace] DATA_GO_KR_API_KEY is not set. API calls will fail.');
+}
+
 const DRUG_PERMIT_BASE = 'https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService07/getDrugPrdtPrmsnInq07';
 const EASY_DRUG_BASE = 'https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList';
 const DRUG_PRICE_BASE = 'https://apis.data.go.kr/B551182/dgamtCrtrInfoService1.2/getDgamtList';
