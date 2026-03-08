@@ -147,7 +147,7 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
               aria-label={mode === 'drug' ? '약 이름 검색' : '성분명 검색'}
               className="w-full pl-12 pr-10 py-3.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base bg-white shadow-sm"
             />
-            {query && (
+            {query ? (
               <button
                 type="button"
                 onClick={() => setQuery('')}
@@ -158,6 +158,8 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
+            ) : !compact && (
+              <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-block px-2 py-0.5 text-xs text-gray-300 bg-gray-50 border border-gray-200 rounded font-mono" aria-hidden="true">/</kbd>
             )}
           </div>
           <button
