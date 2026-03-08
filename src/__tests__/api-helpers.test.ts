@@ -90,4 +90,14 @@ describe('cachedJson', () => {
     const body = await res.json();
     expect(body).toEqual(data);
   });
+
+  it('returns 200 status', () => {
+    const res = cachedJson({ ok: true });
+    expect(res.status).toBe(200);
+  });
+
+  it('sets content-type to application/json', () => {
+    const res = cachedJson({ ok: true });
+    expect(res.headers.get('content-type')).toContain('application/json');
+  });
 });
