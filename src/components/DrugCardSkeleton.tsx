@@ -1,4 +1,6 @@
-export default function DrugCardSkeleton() {
+import { memo } from 'react';
+
+export default memo(function DrugCardSkeleton() {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-5 animate-pulse" aria-hidden="true">
       <div className="flex gap-4">
@@ -22,4 +24,4 @@ export default function DrugCardSkeleton() {
       </div>
     </div>
   );
-}
+});
