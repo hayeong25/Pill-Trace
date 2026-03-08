@@ -95,7 +95,7 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto" role="search">
       <div className="flex flex-wrap gap-2 mb-3" role="radiogroup" aria-label="검색 모드">
         <button
           type="button"
