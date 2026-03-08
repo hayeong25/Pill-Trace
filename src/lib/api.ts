@@ -17,16 +17,29 @@ function fetchWithTimeout(url: string, timeout = API_TIMEOUT): Promise<Response>
   return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
 }
 
-async function fetchJson(url: string, timeout = API_TIMEOUT) {
-  const res = await fetchWithTimeout(url, timeout);
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+async function fetchJson(url: string, timeout = API_TIMEOUT, retries = 1) {
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetchWithTimeout(url, timeout);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
 
-  const contentType = res.headers.get('content-type') || '';
-  if (!contentType.includes('json')) {
-    throw new Error('API returned non-JSON response');
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('json')) {
+        throw new Error('API returned non-JSON response');
+      }
+
+      return res.json();
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      // Don't retry on client abort or 4xx errors
+      if (lastError.name === 'AbortError' || /API error: 4\d{2}/.test(lastError.message)) break;
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, 500));
+      }
+    }
   }
-
-  return res.json();
+  throw lastError;
 }
 
 interface FetchOptions {
