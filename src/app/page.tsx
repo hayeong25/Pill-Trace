@@ -152,6 +152,7 @@ export default function Home() {
     const params = new URLSearchParams({ q: query });
     if (mode !== 'drug') params.set('mode', mode);
     router.push(`/?${params.toString()}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [router]);
 
   const handlePageChange = useCallback((page: number) => {
@@ -343,6 +344,13 @@ export default function Home() {
                   </svg>
                   <p className="text-gray-500 font-medium mb-1">검색 결과가 없습니다</p>
                   <p className="text-sm text-gray-400">다른 키워드로 검색해보세요. 일부만 입력해도 검색됩니다.</p>
+                  <button
+                    type="button"
+                    onClick={() => handleSearch(currentQuery, currentMode === 'drug' ? 'ingredient' : 'drug')}
+                    className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors"
+                  >
+                    {currentMode === 'drug' ? '성분으로 검색해보기' : '약 이름으로 검색해보기'}
+                  </button>
                 </div>
               ) : (
                 <>
