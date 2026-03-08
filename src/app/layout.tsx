@@ -33,6 +33,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#2563eb',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -47,6 +50,26 @@ export default function RootLayout({
         <link rel="stylesheet" as="style" crossOrigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
       </head>
       <body className="antialiased min-h-screen flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Pill Trace',
+              url: 'https://pill-trace.vercel.app',
+              description: '약 이름이나 성분으로 의약품을 검색하고, 동일/유사 성분의 약을 찾아보세요.',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: {
+                  '@type': 'EntryPoint',
+                  urlTemplate: 'https://pill-trace.vercel.app/?q={search_term_string}&mode=drug',
+                },
+                'query-input': 'required name=search_term_string',
+              },
+            }),
+          }}
+        />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:text-sm focus:font-medium">
           본문으로 건너뛰기
         </a>
