@@ -25,10 +25,12 @@ export function checkRateLimit(request: NextRequest): NextResponse | null {
 export function handleApiError(error: unknown, context: string): NextResponse {
   console.error(`[Pill Trace] ${context}:`, error);
   const isTimeout = error instanceof Error && error.name === 'AbortError';
-  return NextResponse.json(
+  const res = NextResponse.json(
     { error: isTimeout ? '검색 시간이 초과되었습니다. 다시 시도해주세요.' : `${context} 중 오류가 발생했습니다.` },
     { status: isTimeout ? 504 : 500 }
   );
+  res.headers.set('Cache-Control', 'no-store');
+  return res;
 }
 
 /**
