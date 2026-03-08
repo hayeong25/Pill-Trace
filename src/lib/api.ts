@@ -35,12 +35,8 @@ interface FetchOptions {
 }
 
 function buildApiUrl(base: string, extraParams: Record<string, string>): string {
-  const params = new URLSearchParams({
-    pageNo: extraParams.pageNo || '1',
-    numOfRows: extraParams.numOfRows || '100',
-    type: 'json',
-    ...extraParams,
-  });
+  const { pageNo = '1', numOfRows = '100', ...rest } = extraParams;
+  const params = new URLSearchParams({ pageNo, numOfRows, type: 'json', ...rest });
   // serviceKey must not be double-encoded — append it raw
   return `${base}?serviceKey=${API_KEY}&${params.toString()}`;
 }
