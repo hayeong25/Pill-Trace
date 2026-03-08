@@ -134,6 +134,16 @@ input[type="search"]::-webkit-search-cancel-button {
   }
 }
 
+@media (forced-colors: active) {
+  .detail-expand {
+    border: 1px solid ButtonText;
+  }
+
+  button:focus-visible {
+    outline: 2px solid ButtonText;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in-up,
   .animate-fade-in-up-delay-1,
