@@ -22,6 +22,9 @@ export default function Error({
       </div>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">오류가 발생했습니다</h1>
       <p className="text-gray-400 mb-8 text-center">예상치 못한 오류가 발생했습니다. 다시 시도해주세요.</p>
+      {error.digest && (
+        <p className="text-xs text-gray-300 mb-4">오류 코드: {error.digest}</p>
+      )}
       <div className="flex gap-3">
         <button
           onClick={reset}
