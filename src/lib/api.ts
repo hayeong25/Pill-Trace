@@ -220,11 +220,20 @@ export async function batchedAll<T>(tasks: (() => Promise<T>)[], concurrency: nu
   return results;
 }
 
+export interface SimilarDrugResult extends Record<string, unknown> {
+  ITEM_SEQ: string;
+  ITEM_NAME: string;
+  ENTP_NAME: string;
+  ITEM_INGR_NAME: string;
+  similarity: number;
+  matchCount: number;
+}
+
 export function findSimilarDrugs(
   targetMaterials: string[],
   allDrugs: Array<Record<string, unknown>>,
   excludeSeq: string
-) {
+): SimilarDrugResult[] {
   const targetSet = new Set(targetMaterials.map(m => m.toLowerCase().trim()));
 
   return allDrugs
@@ -234,7 +243,15 @@ export function findSimilarDrugs(
       const drugIngredients = parseIngredients(ingredientName).map(i => i.name.toLowerCase().trim());
       const matchCount = drugIngredients.filter(i => targetSet.has(i)).length;
       const similarity = targetSet.size > 0 ? matchCount / Math.max(targetSet.size, drugIngredients.length) : 0;
-      return { ...drug, similarity, matchCount, ITEM_INGR_NAME: ingredientName };
+      return {
+        ...drug,
+        ITEM_SEQ: String(drug.ITEM_SEQ || ''),
+        ITEM_NAME: String(drug.ITEM_NAME || ''),
+        ENTP_NAME: String(drug.ENTP_NAME || ''),
+        ITEM_INGR_NAME: ingredientName,
+        similarity,
+        matchCount,
+      } as SimilarDrugResult;
     })
     .filter(drug => drug.matchCount > 0)
     .sort((a, b) => b.similarity - a.similarity);

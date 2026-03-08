@@ -27,19 +27,16 @@ export async function GET(request: NextRequest) {
 
     const str = (val: unknown) => String(val || '');
 
-    const results = similar.map(drug => {
-      const d = drug as Record<string, unknown>;
-      return {
-        ...drug,
-        ingredients: parseIngredients(str(drug.ITEM_INGR_NAME), str(d.ITEM_NAME)),
-      };
-    });
+    const results = similar.map(drug => ({
+      ...drug,
+      ingredients: parseIngredients(drug.ITEM_INGR_NAME, str(drug.ITEM_NAME)),
+    }));
 
     const sliced = results.slice(0, 20);
 
     const easySeqs = new Set<string>();
     const priceMap = new Map<string, string>();
-    const uniqueNames = Array.from(new Set(sliced.map(d => str((d as Record<string, unknown>).ITEM_NAME))));
+    const uniqueNames = Array.from(new Set(sliced.map(d => str(d.ITEM_NAME))));
 
     const [easyChecks] = await Promise.all([
       batchedAll(
@@ -72,14 +69,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const enriched = sliced.map(drug => {
-      const d = drug as Record<string, unknown>;
-      return {
-        ...drug,
-        hasEasyInfo: easySeqs.has(str(d.ITEM_SEQ)),
-        maxPrice: priceMap.get(str(d.ITEM_NAME)) || '',
-      };
-    });
+    const enriched = sliced.map(drug => ({
+      ...drug,
+      hasEasyInfo: easySeqs.has(str(drug.ITEM_SEQ)),
+      maxPrice: priceMap.get(str(drug.ITEM_NAME)) || '',
+    }));
 
     return cachedJson({ items: enriched, totalCount: results.length });
   } catch (error) {
