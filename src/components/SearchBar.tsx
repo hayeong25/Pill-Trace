@@ -75,6 +75,15 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
     }
   }, []);
 
+  const handleClearAllRecent = useCallback(() => {
+    try {
+      localStorage.removeItem(RECENT_SEARCH_KEY);
+      setRecentSearches([]);
+    } catch {
+      // localStorage unavailable
+    }
+  }, []);
+
   const handleModeChange = useCallback((newMode: SearchMode) => {
     setMode(newMode);
     if (compact && query.trim()) {
@@ -207,6 +216,14 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
           {recentSearches.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs text-gray-400">최근 검색:</span>
+              <button
+                type="button"
+                onClick={handleClearAllRecent}
+                className="text-xs text-gray-300 hover:text-red-400 transition-colors"
+                aria-label="최근 검색 전체 삭제"
+              >
+                전체 삭제
+              </button>
               {recentSearches.map((keyword) => (
                 <span key={keyword} className="inline-flex items-center gap-0.5">
                   <button
