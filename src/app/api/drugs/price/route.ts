@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDrugPriceInfo, extractItems } from '@/lib/api';
-import { checkRateLimit, handleApiError } from '@/lib/api-helpers';
+import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {
   const rateLimitRes = checkRateLimit(request);
@@ -27,9 +27,7 @@ export async function GET(request: NextRequest) {
       adtEndDd: item.adtEndDd,
     }));
 
-    const response = NextResponse.json({ items: prices });
-    response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
-    return response;
+    return cachedJson({ items: prices }, 3600, 7200);
   } catch (error) {
     return handleApiError(error, '약가 정보 조회');
   }

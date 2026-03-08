@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems, batchedAll } from '@/lib/api';
-import { checkRateLimit, handleApiError } from '@/lib/api-helpers';
+import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {
   const rateLimitRes = checkRateLimit(request);
@@ -81,12 +81,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    const response = NextResponse.json({
-      items: enriched,
-      totalCount: results.length,
-    });
-    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-    return response;
+    return cachedJson({ items: enriched, totalCount: results.length });
   } catch (error) {
     return handleApiError(error, '유사 약품 검색');
   }

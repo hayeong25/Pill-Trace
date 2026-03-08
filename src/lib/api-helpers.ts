@@ -29,3 +29,12 @@ export function handleApiError(error: unknown, context: string): NextResponse {
     { status: isTimeout ? 504 : 500 }
   );
 }
+
+/**
+ * Create a cached JSON response with standard cache headers.
+ */
+export function cachedJson(data: unknown, maxAge = 300, staleWhileRevalidate = 600): NextResponse {
+  const response = NextResponse.json(data);
+  response.headers.set('Cache-Control', `public, s-maxage=${maxAge}, stale-while-revalidate=${staleWhileRevalidate}`);
+  return response;
+}

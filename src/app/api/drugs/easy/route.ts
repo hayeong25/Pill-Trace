@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getEasyDrugInfo, extractItems } from '@/lib/api';
-import { checkRateLimit, handleApiError } from '@/lib/api-helpers';
+import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {
   const rateLimitRes = checkRateLimit(request);
@@ -18,14 +18,10 @@ export async function GET(request: NextRequest) {
     const { items } = extractItems(data);
 
     if (items.length === 0) {
-      const response = NextResponse.json({ item: null });
-      response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
-      return response;
+      return cachedJson({ item: null });
     }
 
-    const response = NextResponse.json({ item: items[0] });
-    response.headers.set('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1200');
-    return response;
+    return cachedJson({ item: items[0] }, 600, 1200);
   } catch (error) {
     return handleApiError(error, '의약품 상세 정보 조회');
   }

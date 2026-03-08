@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { handleApiError } from '@/lib/api-helpers';
+import { handleApiError, cachedJson } from '@/lib/api-helpers';
 
 describe('handleApiError', () => {
   it('returns 500 for generic error', async () => {
@@ -36,5 +36,24 @@ describe('handleApiError', () => {
     handleApiError(error, '약품 조회');
     expect(spy).toHaveBeenCalledWith('[Pill Trace] 약품 조회:', error);
     spy.mockRestore();
+  });
+});
+
+describe('cachedJson', () => {
+  it('returns response with default cache headers', () => {
+    const res = cachedJson({ test: true });
+    expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=300, stale-while-revalidate=600');
+  });
+
+  it('uses custom cache times', () => {
+    const res = cachedJson({ test: true }, 3600, 7200);
+    expect(res.headers.get('Cache-Control')).toBe('public, s-maxage=3600, stale-while-revalidate=7200');
+  });
+
+  it('returns correct JSON data', async () => {
+    const data = { items: [1, 2, 3] };
+    const res = cachedJson(data);
+    const body = await res.json();
+    expect(body).toEqual(data);
   });
 });
