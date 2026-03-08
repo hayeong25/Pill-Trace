@@ -68,7 +68,9 @@ export default function SimilarDrugsModal({
         if (err instanceof Error && err.name === 'AbortError') return;
         setError('유사 약품 검색 중 오류가 발생했습니다.');
       } finally {
-        setIsLoading(false);
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       }
     };
 
@@ -196,8 +198,8 @@ export default function SimilarDrugsModal({
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {drugs.map((drug, idx) => (
-              <DrugCardErrorBoundary key={`${drug.ITEM_SEQ}-${idx}`}>
+            {drugs.map(drug => (
+              <DrugCardErrorBoundary key={drug.ITEM_SEQ}>
                 <DrugCard
                   itemName={drug.ITEM_NAME}
                   entpName={drug.ENTP_NAME}
