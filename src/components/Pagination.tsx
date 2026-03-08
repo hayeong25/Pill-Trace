@@ -30,7 +30,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
       <p className="text-center text-xs text-gray-400">
         총 {totalCount.toLocaleString()}건 중 {startItem.toLocaleString()}~{endItem.toLocaleString()}건
       </p>
-    <nav className="flex items-center justify-center gap-1.5" aria-label="페이지 이동">
+      <nav className="flex items-center justify-center gap-1.5" aria-label="페이지 이동">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage <= 1}
@@ -93,7 +93,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
       </button>
-    </nav>
+      </nav>
     </div>
   );
 });
