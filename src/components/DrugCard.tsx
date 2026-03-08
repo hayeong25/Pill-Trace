@@ -128,7 +128,7 @@ export default memo(function DrugCard({
                 <HighlightText text={itemName} query={searchQuery} />
               </h3>
               <p className="text-sm text-gray-400 mt-0.5">{entpName}</p>
-              {maxPrice && (
+              {maxPrice && !isNaN(Number(maxPrice)) && (
                 <p className="text-sm font-semibold text-emerald-600 mt-1">
                   약 {Number(maxPrice).toLocaleString()}원
                 </p>
