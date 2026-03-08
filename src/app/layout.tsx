@@ -103,7 +103,7 @@ export default function RootLayout({
         </main>
         <footer className="border-t border-gray-200 bg-white">
           <div className="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-gray-400 space-y-1">
-            <p>Pill Trace - <a href="https://www.data.go.kr" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600 transition-colors">공공데이터포털(data.go.kr)</a> 의약품 허가정보 기반</p>
+            <p>&copy; {new Date().getFullYear()} Pill Trace - <a href="https://www.data.go.kr" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-600 transition-colors">공공데이터포털(data.go.kr)</a> 의약품 허가정보 기반</p>
             <p className="text-xs">본 서비스는 참고용이며, 정확한 의약품 정보는 의사 또는 약사와 상담하세요.</p>
           </div>
         </footer>
