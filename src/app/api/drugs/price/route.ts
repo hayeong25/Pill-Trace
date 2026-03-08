@@ -18,13 +18,13 @@ export async function GET(request: NextRequest) {
     const { items } = extractItems(data);
 
     const prices = items.map(item => ({
-      itemName: item.itmNm,
-      entpName: item.mnfEntpNm,
-      mdsCd: item.mdsCd,
-      mxCprc: item.mxCprc,
-      unit: item.unit,
-      adtStaDd: item.adtStaDd,
-      adtEndDd: item.adtEndDd,
+      itemName: String(item.itmNm || ''),
+      entpName: String(item.mnfEntpNm || ''),
+      mdsCd: String(item.mdsCd || ''),
+      mxCprc: String(item.mxCprc || ''),
+      unit: String(item.unit || ''),
+      adtStaDd: String(item.adtStaDd || ''),
+      adtEndDd: String(item.adtEndDd || ''),
     }));
 
     return cachedJson({ items: prices }, 3600, 7200);
