@@ -68,6 +68,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [searchTime, setSearchTime] = useState(0);
   const [modal, setModal] = useState<ModalState>({
     isOpen: false,
     drugName: '',
@@ -89,6 +90,8 @@ export default function Home() {
     setIsLoading(true);
     setError('');
     setHasSearched(true);
+    setSearchTime(0);
+    const startTime = performance.now();
 
     try {
       const endpoint = mode === 'drug' ? '/api/drugs/search' : '/api/drugs/ingredients';
@@ -112,6 +115,7 @@ export default function Home() {
         setResults(null);
       } else {
         setResults(data);
+        setSearchTime(Math.round(performance.now() - startTime));
         if (data.totalCount !== undefined) {
           document.title = `${query} (${data.totalCount.toLocaleString()}건) - Pill Trace`;
         }
@@ -340,6 +344,7 @@ export default function Home() {
                 </span>
                 <span className="text-sm text-gray-400">
                   &quot;{currentQuery}&quot; {currentMode === 'ingredient' ? '성분' : '약 이름'}
+                  {searchTime > 0 && <span className="ml-1">({searchTime < 1000 ? `${searchTime}ms` : `${(searchTime / 1000).toFixed(1)}초`})</span>}
                 </span>
               </div>
 
