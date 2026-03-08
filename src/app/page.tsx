@@ -109,6 +109,9 @@ export default function Home() {
         setResults(null);
       } else {
         setResults(data);
+        if (data.totalCount !== undefined) {
+          document.title = `${query} (${data.totalCount.toLocaleString()}건) - Pill Trace`;
+        }
       }
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return;
