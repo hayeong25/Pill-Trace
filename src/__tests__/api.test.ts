@@ -308,4 +308,16 @@ describe('edge cases', () => {
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe('성분A');
   });
+
+  it('findSimilarDrugs returns typed ITEM_SEQ as string for numeric input', () => {
+    const drugs = [{ ITEM_SEQ: 12345, ITEM_INGR_NAME: 'A', ITEM_NAME: 'Drug' }];
+    const result = findSimilarDrugs(['A'], drugs as Record<string, unknown>[], '0');
+    expect(result[0].ITEM_SEQ).toBe('12345');
+    expect(typeof result[0].ITEM_SEQ).toBe('string');
+  });
+
+  it('extractKoreanIngredients handles comma-separated names', () => {
+    const result = extractKoreanIngredients('약(성분1,성분2)');
+    expect(result).toEqual(['성분1', '성분2']);
+  });
 });
