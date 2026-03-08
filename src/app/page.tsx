@@ -192,6 +192,11 @@ export default function Home() {
     handleSearch(ingredient, 'ingredient');
   }, [handleSearch]);
 
+  const handleModalIngredientClick = useCallback((ingredient: string) => {
+    setModal(prev => ({ ...prev, isOpen: false }));
+    handleSearch(ingredient, 'ingredient');
+  }, [handleSearch]);
+
   const handleFindSimilar = useCallback((drug: DrugSearchResult) => {
     setModal({
       isOpen: true,
@@ -395,6 +400,7 @@ export default function Home() {
         drugName={modal.drugName}
         materialName={modal.materialName}
         excludeSeq={modal.excludeSeq}
+        onIngredientClick={handleModalIngredientClick}
       />
     </div>
   );

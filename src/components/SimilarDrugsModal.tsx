@@ -16,6 +16,7 @@ interface SimilarDrugsModalProps {
   drugName: string;
   materialName: string;
   excludeSeq: string;
+  onIngredientClick?: (ingredient: string) => void;
 }
 
 export default function SimilarDrugsModal({
@@ -24,6 +25,7 @@ export default function SimilarDrugsModal({
   drugName,
   materialName,
   excludeSeq,
+  onIngredientClick,
 }: SimilarDrugsModalProps) {
   const [drugs, setDrugs] = useState<SimilarDrug[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -206,6 +208,7 @@ export default function SimilarDrugsModal({
                 similarity={drug.similarity}
                 hasEasyInfo={drug.hasEasyInfo}
                 maxPrice={drug.maxPrice}
+                onIngredientClick={onIngredientClick}
               />
             ))}
           </div>
