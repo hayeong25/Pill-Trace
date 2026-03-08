@@ -75,6 +75,14 @@ describe('stripHtmlTags', () => {
   it('decodes hex HTML entities', () => {
     expect(stripHtmlTags('&#x41;&#x42;')).toBe('AB');
   });
+
+  it('handles multiple script tags', () => {
+    expect(stripHtmlTags('a<script>x</script>b<script>y</script>c')).toBe('abc');
+  });
+
+  it('handles self-closing tags', () => {
+    expect(stripHtmlTags('before<hr/>after')).toBe('beforeafter');
+  });
 });
 
 describe('formatPermitDate', () => {

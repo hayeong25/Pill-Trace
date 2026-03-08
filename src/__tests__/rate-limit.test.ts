@@ -41,6 +41,16 @@ describe('rateLimit', () => {
     expect(result.success).toBe(true);
   });
 
+  it('returns remaining 0 when exactly at limit', () => {
+    const ip = 'test-ip-exact';
+    for (let i = 0; i < 59; i++) {
+      rateLimit(ip);
+    }
+    const result = rateLimit(ip); // 60th request
+    expect(result.success).toBe(true);
+    expect(result.remaining).toBe(0);
+  });
+
   it('resets after window expires', () => {
     const ip = 'test-ip-5';
     const now = Date.now();
