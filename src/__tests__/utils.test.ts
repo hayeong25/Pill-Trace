@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { stripHtmlTags, formatPermitDate } from '@/lib/utils';
+import { stripHtmlTags, formatPermitDate, normalizeDrugName } from '@/lib/utils';
 
 describe('stripHtmlTags', () => {
   it('removes simple HTML tags', () => {
@@ -133,5 +133,40 @@ describe('formatPermitDate', () => {
 
   it('formats boundary date 00000000', () => {
     expect(formatPermitDate('00000000')).toBe('0000.00.00');
+  });
+});
+
+describe('normalizeDrugName', () => {
+  it('converts 밀리그램 to mg', () => {
+    expect(normalizeDrugName('타이레놀정500밀리그램')).toBe('타이레놀정500mg');
+  });
+
+  it('converts 마이크로그램 to mcg', () => {
+    expect(normalizeDrugName('약품10마이크로그램')).toBe('약품10mcg');
+  });
+
+  it('converts 밀리리터 to ml', () => {
+    expect(normalizeDrugName('시럽100밀리리터')).toBe('시럽100ml');
+  });
+
+  it('converts 그램 to g (after 밀리그램 replacement)', () => {
+    expect(normalizeDrugName('약품5그램')).toBe('약품5g');
+  });
+
+  it('converts 리터 to l (after 밀리리터 replacement)', () => {
+    expect(normalizeDrugName('용액1리터')).toBe('용액1l');
+  });
+
+  it('removes whitespace and lowercases', () => {
+    expect(normalizeDrugName('Drug Name 100MG')).toBe('drugname100mg');
+  });
+
+  it('normalizes identical drugs with different unit formats', () => {
+    expect(normalizeDrugName('타이레놀정500밀리그램(아세트아미노펜)'))
+      .toBe(normalizeDrugName('타이레놀정500mg(아세트아미노펜)'));
+  });
+
+  it('handles empty string', () => {
+    expect(normalizeDrugName('')).toBe('');
   });
 });

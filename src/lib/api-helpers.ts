@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { parseIngredients } from '@/lib/api';
+import { normalizeDrugName } from '@/lib/utils';
 
 /**
  * Check rate limit for the request IP. Returns a 429 response if exceeded, or null if OK.
@@ -44,6 +45,21 @@ export function cachedJson(data: unknown, maxAge = 300, staleWhileRevalidate = 6
 }
 
 /**
+ * Build a price map from HIRA API items using normalized drug names as keys.
+ */
+export function buildPriceMap(priceItems: Record<string, unknown>[]): Map<string, string> {
+  const priceMap = new Map<string, string>();
+  for (const item of priceItems) {
+    const name = String(item.itmNm || '');
+    const price = String(item.mxCprc || '');
+    if (name && price) {
+      priceMap.set(normalizeDrugName(name), price);
+    }
+  }
+  return priceMap;
+}
+
+/**
  * Convert raw API item to a standardized drug search result object.
  */
 export function mapDrugItem(
@@ -64,6 +80,6 @@ export function mapDrugItem(
     BIG_PRDT_IMG_URL: String(item.BIG_PRDT_IMG_URL || ''),
     ingredients: parseIngredients(ingredientName, itemName),
     hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
-    maxPrice: priceMap.get(itemName) || '',
+    maxPrice: priceMap.get(normalizeDrugName(itemName)) || '',
   };
 }

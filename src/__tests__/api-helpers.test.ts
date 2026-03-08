@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { NextRequest } from 'next/server';
-import { checkRateLimit, handleApiError, cachedJson, mapDrugItem } from '@/lib/api-helpers';
+import { checkRateLimit, handleApiError, cachedJson, mapDrugItem, buildPriceMap } from '@/lib/api-helpers';
+import { normalizeDrugName } from '@/lib/utils';
 
 describe('handleApiError', () => {
   afterEach(() => vi.restoreAllMocks());
@@ -149,10 +150,17 @@ describe('mapDrugItem', () => {
     expect(result.hasEasyInfo).toBe(true);
   });
 
-  it('sets maxPrice from priceMap', () => {
+  it('sets maxPrice from priceMap using normalized name', () => {
     const item = { ITEM_SEQ: '789', ITEM_NAME: 'Drug C', ENTP_NAME: 'Corp', ITEM_INGR_NAME: 'B' };
-    const result = mapDrugItem(item, new Set(), new Map([['Drug C', '5000']]));
+    const result = mapDrugItem(item, new Set(), new Map([[normalizeDrugName('Drug C'), '5000']]));
     expect(result.maxPrice).toBe('5000');
+  });
+
+  it('matches price when names differ only by unit format', () => {
+    const item = { ITEM_SEQ: '1', ITEM_NAME: '타이레놀정500밀리그램', ENTP_NAME: 'Corp', ITEM_INGR_NAME: 'A' };
+    const priceMap = buildPriceMap([{ itmNm: '타이레놀정500mg', mxCprc: '300' }]);
+    const result = mapDrugItem(item, new Set(), priceMap);
+    expect(result.maxPrice).toBe('300');
   });
 
   it('defaults missing fields to empty strings', () => {

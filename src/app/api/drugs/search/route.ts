@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchDrugsByName, getEasyDrugInfo, getDrugPriceInfo, extractItems, MAX_QUERY_LENGTH, MAX_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/api';
-import { checkRateLimit, handleApiError, cachedJson, mapDrugItem } from '@/lib/api-helpers';
+import { checkRateLimit, handleApiError, cachedJson, mapDrugItem, buildPriceMap } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {
   const rateLimitRes = checkRateLimit(request);
@@ -33,17 +33,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const priceMap = new Map<string, string>();
-    if (priceData) {
-      const { items: priceItems } = extractItems(priceData);
-      for (const item of priceItems) {
-        const name = String(item.itmNm || '');
-        const price = String(item.mxCprc || '');
-        if (name && price) {
-          priceMap.set(name, price);
-        }
-      }
-    }
+    const priceMap = priceData ? buildPriceMap(extractItems(priceData).items) : new Map<string, string>();
 
     const results = items.map(item => mapDrugItem(item, easySeqs, priceMap));
 
