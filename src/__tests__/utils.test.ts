@@ -45,6 +45,23 @@ describe('stripHtmlTags', () => {
   it('converts &nbsp; to regular space', () => {
     expect(stripHtmlTags('Hello&nbsp;World')).toBe('Hello World');
   });
+
+  it('removes tags with attributes including event handlers', () => {
+    expect(stripHtmlTags('<img src="x" onerror="alert(1)">')).toBe('');
+    expect(stripHtmlTags('<a href="javascript:void(0)">click</a>')).toBe('click');
+  });
+
+  it('removes script tags and content between them', () => {
+    expect(stripHtmlTags('<script>alert(1)</script>safe')).toBe('alert(1)safe');
+  });
+
+  it('handles unclosed tags', () => {
+    expect(stripHtmlTags('text<br')).toBe('text<br');
+  });
+
+  it('decodes numeric HTML entities', () => {
+    expect(stripHtmlTags('&#60;script&#62;')).toBe('<script>');
+  });
 });
 
 describe('formatPermitDate', () => {
