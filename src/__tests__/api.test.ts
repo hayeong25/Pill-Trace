@@ -197,6 +197,20 @@ describe('batchedAll', () => {
     const results = await batchedAll([async () => 42], 1);
     expect(results).toEqual([42]);
   });
+
+  it('respects concurrency limit', async () => {
+    let concurrent = 0;
+    let maxConcurrent = 0;
+    const tasks = Array.from({ length: 6 }, () => async () => {
+      concurrent++;
+      maxConcurrent = Math.max(maxConcurrent, concurrent);
+      await new Promise(r => setTimeout(r, 10));
+      concurrent--;
+      return maxConcurrent;
+    });
+    await batchedAll(tasks, 3);
+    expect(maxConcurrent).toBeLessThanOrEqual(3);
+  });
 });
 
 describe('edge cases', () => {
