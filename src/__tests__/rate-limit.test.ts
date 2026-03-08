@@ -51,6 +51,13 @@ describe('rateLimit', () => {
     expect(result.remaining).toBe(0);
   });
 
+  it('counts requests sequentially', () => {
+    const ip = 'test-ip-seq';
+    const r1 = rateLimit(ip);
+    const r2 = rateLimit(ip);
+    expect(r1.remaining - r2.remaining).toBe(1);
+  });
+
   it('resets after window expires', () => {
     const ip = 'test-ip-5';
     const now = Date.now();

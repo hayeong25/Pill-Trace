@@ -130,4 +130,8 @@ describe('formatPermitDate', () => {
   it('returns alphabetic string as-is', () => {
     expect(formatPermitDate('abcdefgh')).toBe('abcdefgh');
   });
+
+  it('formats boundary date 00000000', () => {
+    expect(formatPermitDate('00000000')).toBe('0000.00.00');
+  });
 });
