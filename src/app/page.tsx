@@ -111,7 +111,7 @@ export default function Home() {
         setResults(data);
       }
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') return;
+      if (err instanceof Error && err.name === 'AbortError') return;
       setError('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
       setResults(null);
     } finally {
@@ -269,9 +269,33 @@ export default function Home() {
           </div>
 
           {isLoading && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
-              <p className="mt-4 text-sm text-gray-400">의약품 정보를 검색하고 있습니다...</p>
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="h-6 w-20 bg-gray-200 rounded animate-pulse" />
+                <div className="h-6 w-12 bg-gray-100 rounded-full animate-pulse" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 animate-pulse">
+                    <div className="flex gap-4">
+                      <div className="w-20 h-20 bg-gray-100 rounded-xl flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-5 bg-gray-200 rounded w-3/4" />
+                        <div className="h-4 bg-gray-100 rounded w-1/2" />
+                        <div className="h-4 bg-emerald-50 rounded w-1/3" />
+                      </div>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <div className="h-3 bg-gray-100 rounded w-12" />
+                      <div className="flex gap-1.5">
+                        <div className="h-7 bg-blue-50 rounded-lg w-20" />
+                        <div className="h-7 bg-blue-50 rounded-lg w-24" />
+                        <div className="h-7 bg-blue-50 rounded-lg w-16" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
