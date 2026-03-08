@@ -320,4 +320,13 @@ describe('edge cases', () => {
     const result = extractKoreanIngredients('약(성분1,성분2)');
     expect(result).toEqual(['성분1', '성분2']);
   });
+
+  it('extractKoreanIngredients returns empty for empty parenthetical', () => {
+    expect(extractKoreanIngredients('약()')).toEqual([]);
+  });
+
+  it('parseIngredients deduplicates case-insensitively', () => {
+    const result = parseIngredients('acetaminophen/Acetaminophen');
+    expect(result).toHaveLength(1);
+  });
 });
