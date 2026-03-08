@@ -6,7 +6,9 @@ export async function GET(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
   const { success } = rateLimit(ip);
   if (!success) {
-    return NextResponse.json({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' }, { status: 429 });
+    const res = NextResponse.json({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' }, { status: 429 });
+    res.headers.set('Retry-After', '60');
+    return res;
   }
 
   const { searchParams } = new URL(request.url);
