@@ -92,6 +92,14 @@ describe('stripHtmlTags', () => {
     expect(result).toContain('두통, 치통');
     expect(result).not.toContain('<');
   });
+
+  it('handles whitespace-only input', () => {
+    expect(stripHtmlTags('   ')).toBe('');
+  });
+
+  it('handles consecutive br tags', () => {
+    expect(stripHtmlTags('A<br><br><br>B')).toBe('A\n\nB');
+  });
 });
 
 describe('formatPermitDate', () => {
