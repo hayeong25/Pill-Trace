@@ -46,15 +46,23 @@ body {
 .detail-expand {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.25s ease-out;
+  transition: grid-template-rows 0.25s ease-out, opacity 0.2s ease-out;
+  opacity: 0;
 }
 
 .detail-expand[data-open="true"] {
   grid-template-rows: 1fr;
+  opacity: 1;
 }
 
 .detail-expand-inner {
   overflow: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
