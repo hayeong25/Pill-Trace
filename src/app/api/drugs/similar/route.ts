@@ -1,15 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems } from '@/lib/api';
-
-async function batchedAll<T>(tasks: (() => Promise<T>)[], concurrency: number): Promise<T[]> {
-  const results: T[] = [];
-  for (let i = 0; i < tasks.length; i += concurrency) {
-    const batch = tasks.slice(i, i + concurrency);
-    const batchResults = await Promise.all(batch.map(fn => fn()));
-    results.push(...batchResults);
-  }
-  return results;
-}
+import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems, batchedAll } from '@/lib/api';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

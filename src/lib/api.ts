@@ -201,6 +201,16 @@ function parseMaterialName(materialName: string): ParsedIngredient[] {
   });
 }
 
+export async function batchedAll<T>(tasks: (() => Promise<T>)[], concurrency: number): Promise<T[]> {
+  const results: T[] = [];
+  for (let i = 0; i < tasks.length; i += concurrency) {
+    const batch = tasks.slice(i, i + concurrency);
+    const batchResults = await Promise.all(batch.map(fn => fn()));
+    results.push(...batchResults);
+  }
+  return results;
+}
+
 export function findSimilarDrugs(
   targetMaterials: string[],
   allDrugs: Array<Record<string, unknown>>,
