@@ -112,7 +112,7 @@ export default memo(function DrugCard({
           <div className="flex-shrink-0">
             <Image
               src={imageUrl}
-              alt={itemName}
+              alt={`${itemName} 제품 이미지`}
               width={80}
               height={80}
               className="object-contain rounded-xl bg-gray-50 border border-gray-100"
