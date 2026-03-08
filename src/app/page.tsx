@@ -151,7 +151,7 @@ export default function Home() {
         const target = e.target as HTMLElement;
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
         e.preventDefault();
-        const searchInput = document.querySelector<HTMLInputElement>('input[type="text"][enterkeyhint="search"]');
+        const searchInput = document.querySelector<HTMLInputElement>('input[type="search"]');
         searchInput?.focus();
       }
     };
