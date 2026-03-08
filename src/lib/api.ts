@@ -1,7 +1,14 @@
 import { ParsedIngredient } from '@/types/drug';
 
 const API_KEY = process.env.DATA_GO_KR_API_KEY || '';
-const API_TIMEOUT = 10000;
+const API_TIMEOUT = 10_000;
+const FETCH_RETRIES = 1;
+const RETRY_DELAY = 500;
+export const DEFAULT_PAGE_SIZE = 20;
+export const BATCH_CONCURRENCY = 5;
+export const MAX_SIMILAR_RESULTS = 20;
+export const MAX_QUERY_LENGTH = 100;
+export const MAX_PAGE = 500;
 
 if (!API_KEY && typeof window === 'undefined') {
   console.warn('[Pill Trace] DATA_GO_KR_API_KEY is not set. API calls will fail.');
@@ -17,7 +24,7 @@ function fetchWithTimeout(url: string, timeout = API_TIMEOUT): Promise<Response>
   return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
 }
 
-async function fetchJson(url: string, timeout = API_TIMEOUT, retries = 1) {
+async function fetchJson(url: string, timeout = API_TIMEOUT, retries = FETCH_RETRIES) {
   let lastError: Error | null = null;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -35,7 +42,7 @@ async function fetchJson(url: string, timeout = API_TIMEOUT, retries = 1) {
       // Don't retry on client abort or 4xx errors
       if (lastError.name === 'AbortError' || /API error: 4\d{2}/.test(lastError.message)) break;
       if (attempt < retries) {
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, RETRY_DELAY));
       }
     }
   }
@@ -91,7 +98,7 @@ export function extractItems(data: ApiResponse): { items: Record<string, unknown
     items,
     totalCount: body?.totalCount || 0,
     pageNo: body?.pageNo || 1,
-    numOfRows: body?.numOfRows || 20,
+    numOfRows: body?.numOfRows || DEFAULT_PAGE_SIZE,
   };
 }
 

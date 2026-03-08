@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, extractItems, batchedAll } from '@/lib/api';
+import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, extractItems, batchedAll, MAX_QUERY_LENGTH, MAX_PAGE, DEFAULT_PAGE_SIZE, BATCH_CONCURRENCY } from '@/lib/api';
 import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {
@@ -9,10 +9,10 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
   const pageParam = parseInt(searchParams.get('page') || '1', 10);
-  const page = isNaN(pageParam) || pageParam < 1 ? 1 : Math.min(pageParam, 500);
+  const page = isNaN(pageParam) || pageParam < 1 ? 1 : Math.min(pageParam, MAX_PAGE);
 
-  if (!query || query.length > 100) {
-    return NextResponse.json({ error: '성분명을 입력해주세요. (최대 100자)' }, { status: 400 });
+  if (!query || query.length > MAX_QUERY_LENGTH) {
+    return NextResponse.json({ error: `성분명을 입력해주세요. (최대 ${MAX_QUERY_LENGTH}자)` }, { status: 400 });
   }
 
   const sanitizedQuery = query.trim();
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   try {
     const data = await searchDrugsByIngredient(sanitizedQuery, {
       pageNo: page,
-      numOfRows: 20,
+      numOfRows: DEFAULT_PAGE_SIZE,
     });
 
     const { items, totalCount, pageNo, numOfRows } = extractItems(data);
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
             .then(d => { const { items: ei } = extractItems(d); return { name, seq: ei.length > 0 ? String(ei[0].itemSeq || '') : '' }; })
             .catch(() => ({ name, seq: '' }))
         ),
-        5
+        BATCH_CONCURRENCY
       ),
       batchedAll(
         uniqueNames.map(name => () =>
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
             })
             .catch(() => {})
         ),
-        5
+        BATCH_CONCURRENCY
       ),
     ]);
     const easySeqs = new Set(easyChecks.map(c => c.seq).filter(Boolean));

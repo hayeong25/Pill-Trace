@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems, batchedAll } from '@/lib/api';
+import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems, batchedAll, BATCH_CONCURRENCY, MAX_SIMILAR_RESULTS } from '@/lib/api';
 import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       ingredients: parseIngredients(drug.ITEM_INGR_NAME, str(drug.ITEM_NAME)),
     }));
 
-    const sliced = results.slice(0, 20);
+    const sliced = results.slice(0, MAX_SIMILAR_RESULTS);
 
     const easySeqs = new Set<string>();
     const priceMap = new Map<string, string>();
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         uniqueNames.map(name => () =>
           getEasyDrugInfo(name, { numOfRows: 1 }).catch(() => null)
         ),
-        5
+        BATCH_CONCURRENCY
       ),
       batchedAll(
         uniqueNames.map(name => () =>
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
             })
             .catch(() => {})
         ),
-        5
+        BATCH_CONCURRENCY
       ),
     ]);
     for (const easyData of easyChecks) {
