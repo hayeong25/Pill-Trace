@@ -6,10 +6,9 @@ import DrugCardErrorBoundary from './DrugCardErrorBoundary';
 import DrugCardSkeleton from './DrugCardSkeleton';
 import { DrugSearchResult } from '@/types/drug';
 
-interface SimilarDrug extends DrugSearchResult {
+type SimilarDrug = DrugSearchResult & {
   similarity: number;
-  maxPrice?: string;
-}
+};
 
 interface SimilarDrugsModalProps {
   isOpen: boolean;
