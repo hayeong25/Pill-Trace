@@ -13,6 +13,7 @@ export function checkRateLimit(request: NextRequest): NextResponse | null {
       { status: 429 }
     );
     res.headers.set('Retry-After', '60');
+    res.headers.set('Cache-Control', 'no-store');
     return res;
   }
   return null;
