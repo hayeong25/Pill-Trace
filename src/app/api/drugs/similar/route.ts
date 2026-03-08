@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems, batchedAll } from '@/lib/api';
-import { rateLimit } from '@/lib/rate-limit';
+import { checkRateLimit, handleApiError } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-  const { success } = rateLimit(ip);
-  if (!success) {
-    const res = NextResponse.json({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' }, { status: 429 });
-    res.headers.set('Retry-After', '60');
-    return res;
-  }
+  const rateLimitRes = checkRateLimit(request);
+  if (rateLimitRes) return rateLimitRes;
 
   const { searchParams } = new URL(request.url);
   const materialName = searchParams.get('material');
@@ -93,11 +88,6 @@ export async function GET(request: NextRequest) {
     response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
     return response;
   } catch (error) {
-    console.error('[Pill Trace] Similar drugs search error:', error);
-    const isTimeout = error instanceof Error && error.name === 'AbortError';
-    return NextResponse.json(
-      { error: isTimeout ? '검색 시간이 초과되었습니다. 다시 시도해주세요.' : '유사 약품 검색 중 오류가 발생했습니다.' },
-      { status: isTimeout ? 504 : 500 }
-    );
+    return handleApiError(error, '유사 약품 검색');
   }
 }
