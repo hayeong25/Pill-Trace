@@ -63,7 +63,7 @@ export function extractItems(data: ApiResponse): { items: Record<string, unknown
   const resultCode = data?.header?.resultCode;
   if (resultCode && resultCode !== '00') {
     const msg = data.header?.resultMsg || 'Unknown API error';
-    console.error(`[API] resultCode=${resultCode}, resultMsg=${msg}`);
+    console.error(`[Pill Trace] API error: resultCode=${resultCode}, resultMsg=${msg}`);
     return { items: [], totalCount: 0, pageNo: 1, numOfRows: 20 };
   }
 
