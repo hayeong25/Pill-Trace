@@ -51,7 +51,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
             >
               1
             </button>
-            {start > 2 && <span className="px-1 text-gray-300">...</span>}
+            {start > 2 && <span className="px-1 text-gray-300" aria-hidden="true">...</span>}
           </>
         )}
 
@@ -74,7 +74,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
 
         {end < totalPages && (
           <>
-            {end < totalPages - 1 && <span className="px-1 text-gray-300">...</span>}
+            {end < totalPages - 1 && <span className="px-1 text-gray-300" aria-hidden="true">...</span>}
             <button
               onClick={() => onPageChange(totalPages)}
               aria-label="마지막 페이지"
