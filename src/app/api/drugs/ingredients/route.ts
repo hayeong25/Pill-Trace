@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, extractItems } from '@/lib/api';
 
+async function batchedAll<T>(tasks: (() => Promise<T>)[], concurrency: number): Promise<T[]> {
+  const results: T[] = [];
+  for (let i = 0; i < tasks.length; i += concurrency) {
+    const batch = tasks.slice(i, i + concurrency);
+    const batchResults = await Promise.all(batch.map(fn => fn()));
+    results.push(...batchResults);
+  }
+  return results;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
@@ -26,15 +36,16 @@ export async function GET(request: NextRequest) {
     const priceMap = new Map<string, string>();
 
     const [easyChecks] = await Promise.all([
-      Promise.all(
-        uniqueNames.map(name =>
+      batchedAll(
+        uniqueNames.map(name => () =>
           getEasyDrugInfo(name, { numOfRows: 1 })
             .then(d => { const { items: ei } = extractItems(d); return { name, seq: ei.length > 0 ? String(ei[0].itemSeq || '') : '' }; })
             .catch(() => ({ name, seq: '' }))
-        )
+        ),
+        5
       ),
-      Promise.all(
-        uniqueNames.map(name =>
+      batchedAll(
+        uniqueNames.map(name => () =>
           getDrugPriceInfo(name, { numOfRows: 10 })
             .then(d => {
               const { items: priceItems } = extractItems(d);
@@ -45,7 +56,8 @@ export async function GET(request: NextRequest) {
               }
             })
             .catch(() => {})
-        )
+        ),
+        5
       ),
     ]);
     const easySeqs = new Set(easyChecks.map(c => c.seq).filter(Boolean));
