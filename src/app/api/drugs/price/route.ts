@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDrugPriceInfo, extractItems } from '@/lib/api';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function GET(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const { success } = rateLimit(ip);
+  if (!success) {
+    const res = NextResponse.json({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' }, { status: 429 });
+    res.headers.set('Retry-After', '60');
+    return res;
+  }
+
   const { searchParams } = new URL(request.url);
   const itemName = searchParams.get('name');
 
