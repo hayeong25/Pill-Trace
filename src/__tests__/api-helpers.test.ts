@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { handleApiError, cachedJson } from '@/lib/api-helpers';
+import { NextRequest } from 'next/server';
+import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
 
 describe('handleApiError', () => {
   it('returns 500 for generic error', async () => {
@@ -36,6 +37,35 @@ describe('handleApiError', () => {
     handleApiError(error, '약품 조회');
     expect(spy).toHaveBeenCalledWith('[Pill Trace] 약품 조회:', error);
     spy.mockRestore();
+  });
+});
+
+describe('checkRateLimit', () => {
+  it('returns null for normal requests', () => {
+    const req = new NextRequest('http://localhost/api/test', {
+      headers: { 'x-forwarded-for': '192.168.1.100' },
+    });
+    const result = checkRateLimit(req);
+    expect(result).toBeNull();
+  });
+
+  it('returns 429 with no-store and Retry-After when limit exceeded', () => {
+    const ip = '10.0.0.99';
+    // Exhaust the rate limit (60 requests per minute)
+    for (let i = 0; i < 60; i++) {
+      const req = new NextRequest('http://localhost/api/test', {
+        headers: { 'x-forwarded-for': ip },
+      });
+      checkRateLimit(req);
+    }
+    const req = new NextRequest('http://localhost/api/test', {
+      headers: { 'x-forwarded-for': ip },
+    });
+    const result = checkRateLimit(req);
+    expect(result).not.toBeNull();
+    expect(result!.status).toBe(429);
+    expect(result!.headers.get('Retry-After')).toBe('60');
+    expect(result!.headers.get('Cache-Control')).toBe('no-store');
   });
 });
 
