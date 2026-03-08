@@ -232,4 +232,38 @@ describe('edge cases', () => {
     const result = findSimilarDrugs(['A', 'B'], drugs, '0');
     expect(result[0].similarity).toBe(1);
   });
+
+  it('extractKoreanIngredients skips 구 prefix parenthetical', () => {
+    expect(extractKoreanIngredients('약(구 성분명)')).toEqual([]);
+  });
+
+  it('extractKoreanIngredients skips 수출용 prefix', () => {
+    expect(extractKoreanIngredients('약(수출용제품)')).toEqual([]);
+  });
+
+  it('parseIngredients handles comma-separated in MATERIAL_NAME', () => {
+    const result = parseIngredients('유효성분 : 성분A 10mg, 성분B 20mg');
+    expect(result).toHaveLength(2);
+    expect(result[0].name).toBe('성분A');
+    expect(result[1].name).toBe('성분B');
+  });
+
+  it('findSimilarDrugs partial match gives fractional similarity', () => {
+    const drugs = [{ ITEM_SEQ: '1', ITEM_INGR_NAME: 'A/B/C', ITEM_NAME: 'Drug' }];
+    const result = findSimilarDrugs(['A'], drugs, '0');
+    expect(result[0].similarity).toBeGreaterThan(0);
+    expect(result[0].similarity).toBeLessThan(1);
+  });
+
+  it('extractItems handles items.item as empty array', () => {
+    const data = { body: { items: { item: [] }, totalCount: 0 } };
+    const result = extractItems(data);
+    expect(result.items).toHaveLength(0);
+  });
+
+  it('batchedAll preserves order across batches', async () => {
+    const tasks = [10, 20, 30].map(n => async () => n);
+    const results = await batchedAll(tasks, 1);
+    expect(results).toEqual([10, 20, 30]);
+  });
 });
