@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
   }
 
   const sanitizedQuery = query.trim();
+  if (!sanitizedQuery) {
+    return NextResponse.json({ error: '검색어를 입력해주세요.' }, { status: 400 });
+  }
 
   try {
     const [data, easyData, priceData] = await Promise.all([

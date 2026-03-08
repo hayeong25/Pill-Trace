@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
   }
 
   const sanitizedQuery = query.trim();
+  if (!sanitizedQuery) {
+    return NextResponse.json({ error: '성분명을 입력해주세요.' }, { status: 400 });
+  }
 
   try {
     const data = await searchDrugsByIngredient(sanitizedQuery, {

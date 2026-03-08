@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const materialName = searchParams.get('material');
-  const excludeSeq = searchParams.get('exclude') || '';
+  const excludeSeq = (searchParams.get('exclude') || '').slice(0, 20);
 
   if (!materialName || materialName.length > 2000) {
     return NextResponse.json({ error: '성분 정보가 필요합니다. (최대 2000자)' }, { status: 400 });
