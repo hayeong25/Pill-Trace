@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByIngredient, getEasyDrugInfo, parseIngredients, findSimilarDrugs, extractItems } from '@/lib/api';
+import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems } from '@/lib/api';
+
+async function batchedAll<T>(tasks: (() => Promise<T>)[], concurrency: number): Promise<T[]> {
+  const results: T[] = [];
+  for (let i = 0; i < tasks.length; i += concurrency) {
+    const batch = tasks.slice(i, i + concurrency);
+    const batchResults = await Promise.all(batch.map(fn => fn()));
+    results.push(...batchResults);
+  }
+  return results;
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -32,10 +42,32 @@ export async function GET(request: NextRequest) {
     const sliced = results.slice(0, 20);
 
     const easySeqs = new Set<string>();
+    const priceMap = new Map<string, string>();
     const uniqueNames = Array.from(new Set(sliced.map(d => String((d as Record<string, unknown>).ITEM_NAME || ''))));
-    const easyChecks = await Promise.all(
-      uniqueNames.map(name => getEasyDrugInfo(name, { numOfRows: 1 }).catch(() => null))
-    );
+
+    const [easyChecks] = await Promise.all([
+      batchedAll(
+        uniqueNames.map(name => () =>
+          getEasyDrugInfo(name, { numOfRows: 1 }).catch(() => null)
+        ),
+        5
+      ),
+      batchedAll(
+        uniqueNames.map(name => () =>
+          getDrugPriceInfo(name, { numOfRows: 10 })
+            .then(d => {
+              const { items: priceItems } = extractItems(d);
+              for (const p of priceItems) {
+                const pName = String(p.itmNm || '');
+                const price = String(p.mxCprc || '');
+                if (pName && price) priceMap.set(pName, price);
+              }
+            })
+            .catch(() => {})
+        ),
+        5
+      ),
+    ]);
     for (const easyData of easyChecks) {
       if (!easyData) continue;
       const { items: easyItems } = extractItems(easyData);
@@ -44,10 +76,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const enriched = sliced.map(drug => ({
-      ...drug,
-      hasEasyInfo: easySeqs.has(String((drug as Record<string, unknown>).ITEM_SEQ || '')),
-    }));
+    const enriched = sliced.map(drug => {
+      const drugRecord = drug as Record<string, unknown>;
+      return {
+        ...drug,
+        hasEasyInfo: easySeqs.has(String(drugRecord.ITEM_SEQ || '')),
+        maxPrice: priceMap.get(String(drugRecord.ITEM_NAME || '')) || '',
+      };
+    });
 
     const response = NextResponse.json({
       items: enriched,

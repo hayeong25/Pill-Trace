@@ -6,6 +6,7 @@ import { DrugSearchResult } from '@/types/drug';
 
 interface SimilarDrug extends DrugSearchResult {
   similarity: number;
+  maxPrice?: string;
 }
 
 interface SimilarDrugsModalProps {
@@ -212,6 +213,7 @@ export default function SimilarDrugsModal({
                 storageMethod={drug.STORAGE_METHOD}
                 similarity={drug.similarity}
                 hasEasyInfo={drug.hasEasyInfo}
+                maxPrice={drug.maxPrice}
               />
             ))}
           </div>
