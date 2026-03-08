@@ -365,18 +365,33 @@ export default function Home() {
                   <svg className="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <p className="text-gray-500 font-medium mb-1">검색 결과가 없습니다</p>
-                  <p className="text-sm text-gray-400">다른 키워드로 검색해보세요. 일부만 입력해도 검색됩니다.</p>
-                  <button
-                    type="button"
-                    onClick={() => handleSearch(currentQuery, currentMode === 'drug' ? 'ingredient' : 'drug')}
-                    className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                    </svg>
-                    {currentMode === 'drug' ? '성분으로 검색해보기' : '약 이름으로 검색해보기'}
-                  </button>
+                  {results.totalCount > 0 && currentPage > 1 ? (
+                    <>
+                      <p className="text-gray-500 font-medium mb-1">해당 페이지에 결과가 없습니다</p>
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(1)}
+                        className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors"
+                      >
+                        첫 페이지로 이동
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-500 font-medium mb-1">검색 결과가 없습니다</p>
+                      <p className="text-sm text-gray-400">다른 키워드로 검색해보세요. 일부만 입력해도 검색됩니다.</p>
+                      <button
+                        type="button"
+                        onClick={() => handleSearch(currentQuery, currentMode === 'drug' ? 'ingredient' : 'drug')}
+                        className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                        {currentMode === 'drug' ? '성분으로 검색해보기' : '약 이름으로 검색해보기'}
+                      </button>
+                    </>
+                  )}
                 </div>
               ) : (
                 <>
