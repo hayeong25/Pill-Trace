@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, memo } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import Image from 'next/image';
 import { ParsedIngredient, EasyDrugInfo } from '@/types/drug';
 import { stripHtmlTags, formatPermitDate } from '@/lib/utils';
@@ -69,21 +69,30 @@ export default memo(function DrugCard({
   const [detailError, setDetailError] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showAllIngredients, setShowAllIngredients] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => { abortRef.current?.abort(); };
+  }, []);
 
   const MAX_VISIBLE_INGREDIENTS = 5;
   const hasMoreIngredients = ingredients.length > MAX_VISIBLE_INGREDIENTS;
   const visibleIngredients = showAllIngredients ? ingredients : ingredients.slice(0, MAX_VISIBLE_INGREDIENTS);
 
   const fetchEasyInfo = async () => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     setIsDetailLoading(true);
     setDetailError(false);
     try {
       const params = new URLSearchParams({ name: itemName });
-      const res = await fetch(`/api/drugs/easy?${params}`);
+      const res = await fetch(`/api/drugs/easy?${params}`, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setEasyInfo(data.item || null);
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
       setDetailError(true);
     } finally {
       setIsDetailLoading(false);
