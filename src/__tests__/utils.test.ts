@@ -51,8 +51,13 @@ describe('stripHtmlTags', () => {
     expect(stripHtmlTags('<a href="javascript:void(0)">click</a>')).toBe('click');
   });
 
-  it('removes script tags and content between them', () => {
-    expect(stripHtmlTags('<script>alert(1)</script>safe')).toBe('alert(1)safe');
+  it('removes script tags and their content', () => {
+    expect(stripHtmlTags('<script>alert(1)</script>safe')).toBe('safe');
+    expect(stripHtmlTags('<script type="text/javascript">code()</script>text')).toBe('text');
+  });
+
+  it('removes style tags and their content', () => {
+    expect(stripHtmlTags('<style>body{color:red}</style>text')).toBe('text');
   });
 
   it('handles unclosed tags', () => {
