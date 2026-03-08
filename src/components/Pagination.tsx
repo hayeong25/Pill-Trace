@@ -10,7 +10,7 @@ interface PaginationProps {
 }
 
 export default memo(function Pagination({ currentPage, totalCount, numOfRows, onPageChange }: PaginationProps) {
-  const totalPages = Math.ceil(totalCount / numOfRows);
+  const totalPages = numOfRows > 0 ? Math.ceil(totalCount / numOfRows) : 0;
 
   if (totalPages <= 1) return null;
 
