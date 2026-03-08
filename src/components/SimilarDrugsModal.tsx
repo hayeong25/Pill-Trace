@@ -59,7 +59,7 @@ export default function SimilarDrugsModal({
           lastFetchedRef.current = cacheKey;
         }
       } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
+        if (err instanceof Error && err.name === 'AbortError') return;
         setError('유사 약품 검색 중 오류가 발생했습니다.');
       } finally {
         setIsLoading(false);
@@ -74,10 +74,13 @@ export default function SimilarDrugsModal({
   }, [isOpen, materialName, excludeSeq]);
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Auto-focus close button for keyboard users
+      setTimeout(() => closeButtonRef.current?.focus(), 50);
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
@@ -137,6 +140,7 @@ export default function SimilarDrugsModal({
             </p>
           </div>
           <button
+            ref={closeButtonRef}
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
             aria-label="닫기"
@@ -149,9 +153,25 @@ export default function SimilarDrugsModal({
 
         <div className="p-6 overflow-y-auto max-h-[calc(85vh-76px)]">
           {isLoading && (
-            <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
-              <p className="mt-4 text-sm text-gray-400">유사 약품을 찾고 있습니다...</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 animate-pulse">
+                  <div className="flex gap-4">
+                    <div className="w-20 h-20 bg-gray-100 rounded-xl flex-shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <div className="flex justify-between">
+                        <div className="h-5 bg-gray-200 rounded w-3/4" />
+                        <div className="h-6 bg-green-50 rounded-full w-12" />
+                      </div>
+                      <div className="h-4 bg-gray-100 rounded w-1/2" />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex gap-1.5">
+                    <div className="h-7 bg-blue-50 rounded-lg w-20" />
+                    <div className="h-7 bg-blue-50 rounded-lg w-24" />
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
