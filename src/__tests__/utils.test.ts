@@ -41,6 +41,10 @@ describe('stripHtmlTags', () => {
   it('handles mixed content with entities and tags', () => {
     expect(stripHtmlTags('<b>Bold</b> &amp; <i>Italic</i>')).toBe('Bold & Italic');
   });
+
+  it('converts &nbsp; to regular space', () => {
+    expect(stripHtmlTags('Hello&nbsp;World')).toBe('Hello World');
+  });
 });
 
 describe('formatPermitDate', () => {
