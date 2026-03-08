@@ -157,6 +157,7 @@ export default function Home() {
     }
     return () => {
       abortControllerRef.current?.abort();
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
     };
   }, [currentQuery, currentMode, currentPage, fetchResults]);
 
