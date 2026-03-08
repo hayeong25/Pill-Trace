@@ -187,11 +187,10 @@ export default memo(function DrugCard({
                     title={ing.raw}
                   >
                     <HighlightText text={displayName} query={searchQuery} />
-                    {(ing.nameKo || ing.amount) && (
-                      <span className="text-blue-400 ml-1">
-                        ({[ing.nameKo ? ing.name : '', ing.amount].filter(Boolean).join(' ')})
-                      </span>
-                    )}
+                    {(() => {
+                      const extra = [ing.nameKo ? ing.name : '', ing.amount].filter(Boolean).join(' ');
+                      return extra ? <span className="text-blue-400 ml-1">({extra})</span> : null;
+                    })()}
                   </Tag>
                 );
               })}
