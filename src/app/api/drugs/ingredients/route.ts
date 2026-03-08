@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByIngredient, getEasyDrugInfo, parseIngredients, extractItems } from '@/lib/api';
+import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, extractItems } from '@/lib/api';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -19,22 +19,44 @@ export async function GET(request: NextRequest) {
 
     const { items, totalCount, pageNo, numOfRows } = extractItems(data);
 
-    // Collect unique drug names to batch-check easy drug info
+    // Batch-check easy drug info and price data in parallel
     const uniqueNames = Array.from(new Set(items.map(item => String(item.ITEM_NAME || ''))));
-    const easyChecks = await Promise.all(
-      uniqueNames.map(name =>
-        getEasyDrugInfo(name, { numOfRows: 1 })
-          .then(d => { const { items: ei } = extractItems(d); return { name, seq: ei.length > 0 ? String(ei[0].itemSeq || '') : '' }; })
-          .catch(() => ({ name, seq: '' }))
-      )
-    );
+    const priceMap = new Map<string, string>();
+
+    const [easyChecks] = await Promise.all([
+      Promise.all(
+        uniqueNames.map(name =>
+          getEasyDrugInfo(name, { numOfRows: 1 })
+            .then(d => { const { items: ei } = extractItems(d); return { name, seq: ei.length > 0 ? String(ei[0].itemSeq || '') : '' }; })
+            .catch(() => ({ name, seq: '' }))
+        )
+      ),
+      Promise.all(
+        uniqueNames.map(name =>
+          getDrugPriceInfo(name, { numOfRows: 10 })
+            .then(d => {
+              const { items: priceItems } = extractItems(d);
+              for (const p of priceItems) {
+                const pName = String(p.itmNm || '');
+                const price = String(p.mxCprc || '');
+                if (pName && price) priceMap.set(pName, price);
+              }
+            })
+            .catch(() => {})
+        )
+      ),
+    ]);
     const easySeqs = new Set(easyChecks.map(c => c.seq).filter(Boolean));
 
-    const results = items.map((item) => ({
-      ...item,
-      ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || ''), String(item.ITEM_NAME || '')),
-      hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
-    }));
+    const results = items.map((item) => {
+      const itemName = String(item.ITEM_NAME || '');
+      return {
+        ...item,
+        ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || ''), itemName),
+        hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
+        maxPrice: priceMap.get(itemName) || '',
+      };
+    });
 
     const response = NextResponse.json({
       items: results,
@@ -46,7 +68,7 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Ingredient search error:', error);
-    const isTimeout = error instanceof DOMException && error.name === 'AbortError';
+    const isTimeout = error instanceof Error && error.name === 'AbortError';
     return NextResponse.json(
       { error: isTimeout ? '검색 시간이 초과되었습니다. 다시 시도해주세요.' : '성분 검색 중 오류가 발생했습니다.' },
       { status: isTimeout ? 504 : 500 }
