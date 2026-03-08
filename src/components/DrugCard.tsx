@@ -255,7 +255,7 @@ export default memo(function DrugCard({
               </>
             ) : (
               <>
-                <svg className={`w-4 h-4 transition-transform ${isDetailOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-4 h-4 transition-transform ${isDetailOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
                 {isDetailOpen ? '접기' : '상세 정보'}
@@ -270,7 +270,7 @@ export default memo(function DrugCard({
             aria-haspopup="dialog"
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-sm font-medium bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
             </svg>
             유사 약품
@@ -290,7 +290,7 @@ export default memo(function DrugCard({
                     return (
                       <div key={key} className={`${bg} rounded-xl p-4`}>
                         <h5 className={`flex items-center gap-1.5 text-sm font-bold ${color} mb-2`}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
                           </svg>
                           {label}
