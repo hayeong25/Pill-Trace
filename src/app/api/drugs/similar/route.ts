@@ -21,11 +21,13 @@ export async function GET(request: NextRequest) {
     const targetNames = ingredients.map(i => i.name);
     const similar = findSimilarDrugs(targetNames, items, excludeSeq);
 
+    const str = (val: unknown) => String(val || '');
+
     const results = similar.map(drug => {
-      const drugRecord = drug as Record<string, unknown>;
+      const d = drug as Record<string, unknown>;
       return {
         ...drug,
-        ingredients: parseIngredients(String(drug.ITEM_INGR_NAME || ''), String(drugRecord.ITEM_NAME || '')),
+        ingredients: parseIngredients(str(drug.ITEM_INGR_NAME), str(d.ITEM_NAME)),
       };
     });
 
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     const easySeqs = new Set<string>();
     const priceMap = new Map<string, string>();
-    const uniqueNames = Array.from(new Set(sliced.map(d => String((d as Record<string, unknown>).ITEM_NAME || ''))));
+    const uniqueNames = Array.from(new Set(sliced.map(d => str((d as Record<string, unknown>).ITEM_NAME))));
 
     const [easyChecks] = await Promise.all([
       batchedAll(
@@ -67,11 +69,11 @@ export async function GET(request: NextRequest) {
     }
 
     const enriched = sliced.map(drug => {
-      const drugRecord = drug as Record<string, unknown>;
+      const d = drug as Record<string, unknown>;
       return {
         ...drug,
-        hasEasyInfo: easySeqs.has(String(drugRecord.ITEM_SEQ || '')),
-        maxPrice: priceMap.get(String(drugRecord.ITEM_NAME || '')) || '',
+        hasEasyInfo: easySeqs.has(str(d.ITEM_SEQ)),
+        maxPrice: priceMap.get(str(d.ITEM_NAME)) || '',
       };
     });
 
