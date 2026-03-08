@@ -11,6 +11,10 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  word-break: keep-all;
 }
 
 ::selection {
@@ -62,6 +66,11 @@ body {
 
 .detail-expand-inner {
   overflow: hidden;
+}
+
+/* Prevent layout shift when scrollbar appears/disappears */
+html {
+  scrollbar-gutter: stable;
 }
 
 /* Scrollbar styling for modal content */
