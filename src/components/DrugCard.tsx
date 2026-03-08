@@ -18,6 +18,7 @@ interface DrugCardProps {
   hasEasyInfo?: boolean;
   maxPrice?: string;
   onFindSimilar?: () => void;
+  onIngredientClick?: (ingredient: string) => void;
 }
 
 function formatPermitDate(date: string): string {
@@ -66,6 +67,7 @@ export default memo(function DrugCard({
   hasEasyInfo = true,
   maxPrice,
   onFindSimilar,
+  onIngredientClick,
 }: DrugCardProps) {
   const [easyInfo, setEasyInfo] = useState<EasyDrugInfo | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -160,20 +162,30 @@ export default memo(function DrugCard({
         <div className="flex flex-wrap gap-1.5">
           {ingredients.length > 0 ? (
             <>
-              {visibleIngredients.map((ing, idx) => (
-                <span
-                  key={idx}
-                  className="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium"
-                  title={ing.raw}
-                >
-                  <HighlightText text={ing.nameKo || ing.name} query={searchQuery} />
-                  {(ing.nameKo || ing.amount) && (
-                    <span className="text-blue-400 ml-1">
-                      ({[ing.nameKo ? ing.name : '', ing.amount].filter(Boolean).join(' ')})
-                    </span>
-                  )}
-                </span>
-              ))}
+              {visibleIngredients.map((ing, idx) => {
+                const displayName = ing.nameKo || ing.name;
+                const Tag = onIngredientClick ? 'button' : 'span';
+                return (
+                  <Tag
+                    key={idx}
+                    {...(onIngredientClick ? {
+                      type: 'button' as const,
+                      onClick: () => onIngredientClick(displayName),
+                    } : {})}
+                    className={`inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium ${
+                      onIngredientClick ? 'hover:bg-blue-100 cursor-pointer transition-colors' : ''
+                    }`}
+                    title={ing.raw}
+                  >
+                    <HighlightText text={displayName} query={searchQuery} />
+                    {(ing.nameKo || ing.amount) && (
+                      <span className="text-blue-400 ml-1">
+                        ({[ing.nameKo ? ing.name : '', ing.amount].filter(Boolean).join(' ')})
+                      </span>
+                    )}
+                  </Tag>
+                );
+              })}
               {hasMoreIngredients && (
                 <button
                   type="button"

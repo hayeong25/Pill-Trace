@@ -174,6 +174,10 @@ export default function Home() {
     setModal(prev => ({ ...prev, isOpen: false }));
   }, []);
 
+  const handleIngredientClick = useCallback((ingredient: string) => {
+    handleSearch(ingredient, 'ingredient');
+  }, [handleSearch]);
+
   const handleFindSimilar = useCallback((drug: DrugSearchResult) => {
     setModal({
       isOpen: true,
@@ -370,6 +374,7 @@ export default function Home() {
                         hasEasyInfo={drug.hasEasyInfo}
                         maxPrice={drug.maxPrice}
                         onFindSimilar={() => handleFindSimilar(drug)}
+                        onIngredientClick={handleIngredientClick}
                       />
                     ))}
                   </div>
