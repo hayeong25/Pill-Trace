@@ -148,7 +148,7 @@ export default memo(function DrugCard({
               </h3>
               <p className="text-sm text-gray-400 mt-0.5 truncate" title={entpName}>{entpName}</p>
               {maxPrice && !isNaN(Number(maxPrice)) && (
-                <p className="text-sm font-semibold text-emerald-600 mt-1">
+                <p className="text-sm font-semibold text-emerald-600 mt-1" aria-label={`약가 약 ${Number(maxPrice).toLocaleString()}원`}>
                   약 {Number(maxPrice).toLocaleString()}원
                 </p>
               )}
