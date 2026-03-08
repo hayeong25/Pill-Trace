@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems, batchedAll, BATCH_CONCURRENCY, MAX_SIMILAR_RESULTS } from '@/lib/api';
 import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
-import { normalizeDrugName } from '@/lib/utils';
+import { normalizeDrugName, normalizeIngredientName } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const rateLimitRes = checkRateLimit(request);
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const ingredients = parseIngredients(materialName);
-    const mainIngredient = ingredients[0]?.name || materialName;
+    const mainIngredient = normalizeIngredientName(ingredients[0]?.name || materialName);
 
     const data = await searchDrugsByIngredient(mainIngredient, { numOfRows: 100 });
 

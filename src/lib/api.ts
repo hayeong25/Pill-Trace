@@ -1,4 +1,5 @@
 import { ParsedIngredient } from '@/types/drug';
+import { normalizeIngredientName } from '@/lib/utils';
 
 const API_KEY = process.env.DATA_GO_KR_API_KEY || '';
 const API_TIMEOUT = 10_000;
@@ -55,14 +56,14 @@ interface FetchOptions {
   numOfRows?: number;
 }
 
-function buildApiUrl(base: string, extraParams: Record<string, string>): string {
+function buildApiUrl(base: string, extraParams: Record<string, string>, typeParam = 'type'): string {
   const { pageNo = '1', numOfRows = String(API_MAX_ROWS), ...rest } = extraParams;
-  const params = new URLSearchParams({ pageNo, numOfRows, type: 'json', ...rest });
+  const params = new URLSearchParams({ pageNo, numOfRows, [typeParam]: 'json', ...rest });
   // serviceKey must not be double-encoded — append it raw
   return `${base}?serviceKey=${API_KEY}&${params.toString()}`;
 }
 
-interface ApiResponse {
+interface ApiResponseInner {
   header?: {
     resultCode?: string;
     resultMsg?: string;
@@ -75,16 +76,21 @@ interface ApiResponse {
   };
 }
 
+type ApiResponse = ApiResponseInner | { response: ApiResponseInner };
+
 export function extractItems(data: ApiResponse): { items: Record<string, unknown>[]; totalCount: number; pageNo: number; numOfRows: number } {
+  // Unwrap response wrapper if present (HIRA APIs use { response: { header, body } })
+  const unwrapped = 'response' in data && data.response ? data.response : data as ApiResponseInner;
+
   // Check API-level error codes (data.go.kr returns 200 OK with error in header)
-  const resultCode = data?.header?.resultCode;
+  const resultCode = unwrapped?.header?.resultCode;
   if (resultCode && resultCode !== '00') {
-    const msg = data.header?.resultMsg || 'Unknown API error';
+    const msg = unwrapped.header?.resultMsg || 'Unknown API error';
     console.error(`[Pill Trace] API error: resultCode=${resultCode}, resultMsg=${msg}`);
     return { items: [], totalCount: 0, pageNo: 1, numOfRows: DEFAULT_PAGE_SIZE };
   }
 
-  const body = data?.body;
+  const body = unwrapped?.body;
   const rawItems = body?.items;
   let items: Record<string, unknown>[] = [];
 
@@ -135,11 +141,12 @@ export async function getEasyDrugInfo(itemName: string, options: FetchOptions = 
 
 export async function getDrugPriceInfo(itemName: string, options: FetchOptions = {}) {
   const { pageNo = 1, numOfRows = API_MAX_ROWS } = options;
+  // HIRA APIs use _type instead of type for JSON format
   const url = buildApiUrl(DRUG_PRICE_BASE, {
     pageNo: String(pageNo),
     numOfRows: String(numOfRows),
     itmNm: itemName,
-  });
+  }, '_type');
   return fetchJson(url);
 }
 
@@ -237,6 +244,7 @@ export interface SimilarDrugResult extends Record<string, unknown> {
   STORAGE_METHOD?: string;
   ITEM_PERMIT_DATE?: string;
   BIG_PRDT_IMG_URL?: string;
+  ETC_OTC_CODE?: string;
   similarity: number;
   matchCount: number;
 }
@@ -246,13 +254,13 @@ export function findSimilarDrugs(
   allDrugs: Array<Record<string, unknown>>,
   excludeSeq: string
 ): SimilarDrugResult[] {
-  const targetSet = new Set(targetMaterials.map(m => m.toLowerCase().trim()));
+  const targetSet = new Set(targetMaterials.map(m => normalizeIngredientName(m).toLowerCase().trim()));
 
   return allDrugs
     .filter(drug => String(drug.ITEM_SEQ || '') !== excludeSeq)
     .map(drug => {
       const ingredientName = String(drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || '');
-      const drugIngredients = parseIngredients(ingredientName).map(i => i.name.toLowerCase().trim());
+      const drugIngredients = parseIngredients(ingredientName).map(i => normalizeIngredientName(i.name).toLowerCase().trim());
       const matchCount = drugIngredients.filter(i => targetSet.has(i)).length;
       const similarity = targetSet.size > 0 ? matchCount / Math.max(targetSet.size, drugIngredients.length) : 0;
       return {

@@ -14,6 +14,7 @@ interface DrugCardProps {
   chart?: string;
   storageMethod?: string;
   imageUrl?: string;
+  etcOtcCode?: string;
   similarity?: number;
   searchQuery?: string;
   hasEasyInfo?: boolean;
@@ -68,6 +69,7 @@ export default memo(function DrugCard({
   chart,
   storageMethod,
   imageUrl,
+  etcOtcCode,
   similarity,
   searchQuery,
   hasEasyInfo = true,
@@ -162,7 +164,18 @@ export default memo(function DrugCard({
               <h3 className="text-base font-bold text-gray-900 truncate" title={itemName}>
                 <HighlightText text={itemName} query={searchQuery} />
               </h3>
-              <p className="text-sm text-gray-400 mt-0.5 truncate" title={entpName}>{entpName}</p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <p className="text-sm text-gray-400 truncate" title={entpName}>{entpName}</p>
+                {etcOtcCode && (
+                  <span className={`flex-shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold leading-tight ${
+                    etcOtcCode === '전문의약품'
+                      ? 'bg-red-100 text-red-600'
+                      : 'bg-green-100 text-green-600'
+                  }`}>
+                    {etcOtcCode === '전문의약품' ? '전문' : '일반'}
+                  </span>
+                )}
+              </div>
               {maxPrice && !isNaN(Number(maxPrice)) && (
                 <p className="text-sm font-semibold text-emerald-600 mt-1" aria-label={`약가 약 ${Math.round(Number(maxPrice)).toLocaleString()}원`}>
                   약 {Math.round(Number(maxPrice)).toLocaleString()}원

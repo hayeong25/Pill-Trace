@@ -78,6 +78,7 @@ export function mapDrugItem(
     STORAGE_METHOD: String(item.STORAGE_METHOD || ''),
     ITEM_PERMIT_DATE: String(item.ITEM_PERMIT_DATE || ''),
     BIG_PRDT_IMG_URL: String(item.BIG_PRDT_IMG_URL || ''),
+    ETC_OTC_CODE: String(item.ETC_OTC_CODE || ''),
     ingredients: parseIngredients(ingredientName, itemName),
     hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
     maxPrice: priceMap.get(normalizeDrugName(itemName)) || '',

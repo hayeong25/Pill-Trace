@@ -412,12 +412,13 @@ export default function Home() {
                           chart={drug.CHART}
                           storageMethod={drug.STORAGE_METHOD}
                           imageUrl={drug.BIG_PRDT_IMG_URL}
+                          etcOtcCode={drug.ETC_OTC_CODE}
                           searchQuery={currentQuery}
                           hasEasyInfo={drug.hasEasyInfo}
                           maxPrice={drug.maxPrice}
                           priority={idx < 2}
                           itemSeq={drug.ITEM_SEQ}
-                          onFindSimilar={handleFindSimilar}
+                          onFindSimilar={drug.ingredients.length > 0 ? handleFindSimilar : undefined}
                           onIngredientClick={handleIngredientClick}
                         />
                       </DrugCardErrorBoundary>

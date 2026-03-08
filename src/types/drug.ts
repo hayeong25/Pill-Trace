@@ -32,6 +32,7 @@ export interface DrugSearchResult {
   STORAGE_METHOD?: string;
   ITEM_PERMIT_DATE?: string;
   BIG_PRDT_IMG_URL?: string;
+  ETC_OTC_CODE?: string;
   ingredients: ParsedIngredient[];
   hasEasyInfo: boolean;
   maxPrice?: string;

@@ -209,6 +209,7 @@ export default function SimilarDrugsModal({
                   chart={drug.CHART}
                   storageMethod={drug.STORAGE_METHOD}
                   imageUrl={drug.BIG_PRDT_IMG_URL}
+                  etcOtcCode={drug.ETC_OTC_CODE}
                   similarity={drug.similarity}
                   hasEasyInfo={drug.hasEasyInfo}
                   maxPrice={drug.maxPrice}

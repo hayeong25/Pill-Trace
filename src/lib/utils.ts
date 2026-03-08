@@ -24,13 +24,24 @@ export function stripHtmlTags(html: string): string {
  */
 export function normalizeDrugName(name: string): string {
   return name
-    .replace(/밀리그램/g, 'mg')
-    .replace(/마이크로그램/g, 'mcg')
+    // Strip HIRA dose suffix like _(80mg/1정)
+    .replace(/_\([^)]*\)\s*$/, '')
+    .replace(/밀리그[램람]/g, 'mg')
+    .replace(/마이크로그[램람]/g, 'mcg')
     .replace(/밀리리터/g, 'ml')
-    .replace(/그램/g, 'g')
+    .replace(/그[램람]/g, 'g')
     .replace(/리터/g, 'l')
     .replace(/\s+/g, '')
     .toLowerCase();
+}
+
+/**
+ * Strip pharmaceutical form modifiers from ingredient names for better matching.
+ * e.g. "Acetaminophen Micronized" → "Acetaminophen"
+ */
+export function normalizeIngredientName(name: string): string {
+  const MODIFIERS = /\s+(?:Micronized|Granules?|Anhydrous|Hydrate|Monohydrate|Dihydrate|Trihydrate|Hemihydrate|Crystalline|Amorphous|Powder|Pellets?|DC|Compacted|Coated|Buffered|Dried)\b/gi;
+  return name.replace(MODIFIERS, '').trim();
 }
 
 export function formatPermitDate(date: string): string {

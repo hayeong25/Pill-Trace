@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { stripHtmlTags, formatPermitDate, normalizeDrugName } from '@/lib/utils';
+import { stripHtmlTags, formatPermitDate, normalizeDrugName, normalizeIngredientName } from '@/lib/utils';
 
 describe('stripHtmlTags', () => {
   it('removes simple HTML tags', () => {
@@ -168,5 +168,43 @@ describe('normalizeDrugName', () => {
 
   it('handles empty string', () => {
     expect(normalizeDrugName('')).toBe('');
+  });
+});
+
+describe('normalizeIngredientName', () => {
+  it('strips Micronized modifier', () => {
+    expect(normalizeIngredientName('Acetaminophen Micronized')).toBe('Acetaminophen');
+  });
+
+  it('strips Granules modifier', () => {
+    expect(normalizeIngredientName('Acetaminophen Granules')).toBe('Acetaminophen');
+  });
+
+  it('strips Anhydrous modifier', () => {
+    expect(normalizeIngredientName('Caffeine Anhydrous')).toBe('Caffeine');
+  });
+
+  it('strips Monohydrate modifier', () => {
+    expect(normalizeIngredientName('Doxycycline Monohydrate')).toBe('Doxycycline');
+  });
+
+  it('strips Dihydrate modifier', () => {
+    expect(normalizeIngredientName('Cefpodoxime Proxetil Dihydrate')).toBe('Cefpodoxime Proxetil');
+  });
+
+  it('strips DC modifier', () => {
+    expect(normalizeIngredientName('Ibuprofen DC')).toBe('Ibuprofen');
+  });
+
+  it('leaves plain names unchanged', () => {
+    expect(normalizeIngredientName('Acetaminophen')).toBe('Acetaminophen');
+  });
+
+  it('is case insensitive', () => {
+    expect(normalizeIngredientName('Acetaminophen micronized')).toBe('Acetaminophen');
+  });
+
+  it('handles empty string', () => {
+    expect(normalizeIngredientName('')).toBe('');
   });
 });
