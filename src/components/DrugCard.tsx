@@ -269,21 +269,26 @@ export default memo(function DrugCard({
           {(isDetailOpen || easyInfo || detailError) && (
             <div className="mt-4 space-y-3">
               {easyInfo ? (
-                DETAIL_SECTIONS.map(({ key, label, color, bg, icon }) => {
-                  const value = easyInfo[key as keyof EasyDrugInfo];
-                  if (!value) return null;
-                  return (
-                    <div key={key} className={`${bg} rounded-xl p-4`}>
-                      <h5 className={`flex items-center gap-1.5 text-sm font-bold ${color} mb-2`}>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
-                        </svg>
-                        {label}
-                      </h5>
-                      <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{stripHtmlTags(value)}</p>
-                    </div>
+                (() => {
+                  const sections = DETAIL_SECTIONS.map(({ key, label, color, bg, icon }) => {
+                    const value = easyInfo[key as keyof EasyDrugInfo];
+                    if (!value) return null;
+                    return (
+                      <div key={key} className={`${bg} rounded-xl p-4`}>
+                        <h5 className={`flex items-center gap-1.5 text-sm font-bold ${color} mb-2`}>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
+                          </svg>
+                          {label}
+                        </h5>
+                        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{stripHtmlTags(value)}</p>
+                      </div>
+                    );
+                  }).filter(Boolean);
+                  return sections.length > 0 ? sections : (
+                    <p className="text-center text-sm text-gray-400 py-4">상세 정보가 없습니다.</p>
                   );
-                })
+                })()
               ) : detailError ? (
                 <div className="text-center py-6 text-sm bg-red-50 rounded-xl" role="alert">
                   <p className="text-red-500">상세 정보를 불러오지 못했습니다.</p>
