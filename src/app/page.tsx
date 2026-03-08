@@ -384,6 +384,7 @@ export default function Home() {
                           searchQuery={currentQuery}
                           hasEasyInfo={drug.hasEasyInfo}
                           maxPrice={drug.maxPrice}
+                          priority={idx < 2}
                           onFindSimilar={() => handleFindSimilar(drug)}
                           onIngredientClick={handleIngredientClick}
                         />

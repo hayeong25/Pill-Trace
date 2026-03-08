@@ -18,6 +18,7 @@ interface DrugCardProps {
   searchQuery?: string;
   hasEasyInfo?: boolean;
   maxPrice?: string;
+  priority?: boolean;
   onFindSimilar?: () => void;
   onIngredientClick?: (ingredient: string) => void;
 }
@@ -68,6 +69,7 @@ export default memo(function DrugCard({
   searchQuery,
   hasEasyInfo = true,
   maxPrice,
+  priority = false,
   onFindSimilar,
   onIngredientClick,
 }: DrugCardProps) {
@@ -139,6 +141,7 @@ export default memo(function DrugCard({
               className="object-contain rounded-xl bg-gray-50 border border-gray-100"
               onError={() => setImageError(true)}
               unoptimized
+              priority={priority}
             />
           ) : (
             <div className="w-20 h-20 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center" aria-hidden="true">
