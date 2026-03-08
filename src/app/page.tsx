@@ -149,12 +149,15 @@ export default function Home() {
   }, []);
 
   const handleSearch = useCallback((query: string, mode: 'drug' | 'ingredient') => {
-    const params = new URLSearchParams({ q: query, mode, page: '1' });
+    const params = new URLSearchParams({ q: query });
+    if (mode !== 'drug') params.set('mode', mode);
     router.push(`/?${params.toString()}`);
   }, [router]);
 
   const handlePageChange = useCallback((page: number) => {
-    const params = new URLSearchParams({ q: currentQuery, mode: currentMode, page: String(page) });
+    const params = new URLSearchParams({ q: currentQuery });
+    if (currentMode !== 'drug') params.set('mode', currentMode);
+    if (page > 1) params.set('page', String(page));
     router.push(`/?${params.toString()}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [router, currentQuery, currentMode]);
