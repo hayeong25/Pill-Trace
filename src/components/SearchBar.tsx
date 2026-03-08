@@ -65,6 +65,16 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
     onSearch(keyword, searchMode);
   }, [onSearch]);
 
+  const handleRemoveRecent = useCallback((keyword: string) => {
+    try {
+      const recent = getRecentSearches().filter(q => q !== keyword);
+      localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(recent));
+      setRecentSearches(recent);
+    } catch {
+      // localStorage unavailable
+    }
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
@@ -189,14 +199,25 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs text-gray-400">최근 검색:</span>
               {recentSearches.map((keyword) => (
-                <button
-                  key={keyword}
-                  type="button"
-                  onClick={() => handleQuickSearch(keyword)}
-                  className="px-3 py-1 text-xs bg-gray-50 border border-gray-200 text-gray-500 rounded-full hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                >
-                  {keyword}
-                </button>
+                <span key={keyword} className="inline-flex items-center gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickSearch(keyword)}
+                    className="px-3 py-1 text-xs bg-gray-50 border border-gray-200 text-gray-500 rounded-l-full hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                  >
+                    {keyword}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveRecent(keyword)}
+                    aria-label={`${keyword} 검색 기록 삭제`}
+                    className="px-1.5 py-1 text-xs bg-gray-50 border border-l-0 border-gray-200 text-gray-300 rounded-r-full hover:text-red-400 hover:bg-red-50 transition-colors"
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </span>
               ))}
             </div>
           )}
