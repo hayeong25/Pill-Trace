@@ -42,6 +42,20 @@ describe('handleApiError', () => {
     const res = handleApiError(new Error('test'), '테스트');
     expect(res.headers.get('Cache-Control')).toBe('no-store');
   });
+
+  it('handles null error', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const res = handleApiError(null, '작업');
+    expect(res.status).toBe(500);
+    const data = await res.json();
+    expect(data.error).toBe('작업 중 오류가 발생했습니다.');
+  });
+
+  it('handles undefined error', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const res = handleApiError(undefined, '작업');
+    expect(res.status).toBe(500);
+  });
 });
 
 describe('checkRateLimit', () => {
