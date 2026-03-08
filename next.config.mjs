@@ -33,6 +33,8 @@ const nextConfig = {
               "font-src 'self' https://cdn.jsdelivr.net",
               "img-src 'self' data: https://nedrug.mfds.go.kr http://nedrug.mfds.go.kr",
               "connect-src 'self'",
+              "base-uri 'self'",
+              "form-action 'self'",
               "frame-ancestors 'none'",
             ].join('; '),
           },
