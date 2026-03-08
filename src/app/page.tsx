@@ -275,9 +275,9 @@ export default function Home() {
             </div>
 
             {/* Feature Cards */}
-            <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-in-up-delay-3">
+            <ul className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-in-up-delay-3 list-none p-0 m-0">
               {FEATURES.map((feature) => (
-                <div
+                <li
                   key={feature.title}
                   className={`bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-lg ${feature.hoverBorder} transition-all group`}
                 >
@@ -286,9 +286,9 @@ export default function Home() {
                   </div>
                   <h3 className="text-base font-bold text-gray-900 mb-2">{feature.title}</h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{feature.description}</p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
       )}
