@@ -46,6 +46,10 @@ function buildApiUrl(base: string, extraParams: Record<string, string>): string 
 }
 
 interface ApiResponse {
+  header?: {
+    resultCode?: string;
+    resultMsg?: string;
+  };
   body?: {
     items?: Record<string, unknown>[] | { item?: Record<string, unknown> | Record<string, unknown>[] };
     totalCount?: number;
@@ -55,6 +59,14 @@ interface ApiResponse {
 }
 
 export function extractItems(data: ApiResponse): { items: Record<string, unknown>[]; totalCount: number; pageNo: number; numOfRows: number } {
+  // Check API-level error codes (data.go.kr returns 200 OK with error in header)
+  const resultCode = data?.header?.resultCode;
+  if (resultCode && resultCode !== '00') {
+    const msg = data.header?.resultMsg || 'Unknown API error';
+    console.error(`[API] resultCode=${resultCode}, resultMsg=${msg}`);
+    return { items: [], totalCount: 0, pageNo: 1, numOfRows: 20 };
+  }
+
   const body = data?.body;
   const rawItems = body?.items;
   let items: Record<string, unknown>[] = [];
