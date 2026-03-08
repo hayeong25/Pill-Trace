@@ -21,7 +21,21 @@ export async function GET(request: NextRequest) {
       return cachedJson({ item: null });
     }
 
-    return cachedJson({ item: items[0] }, 600, 1200);
+    const raw = items[0];
+    const item = {
+      entpName: String(raw.entpName || ''),
+      itemName: String(raw.itemName || ''),
+      itemSeq: String(raw.itemSeq || ''),
+      efcyQesitm: String(raw.efcyQesitm || ''),
+      useMethodQesitm: String(raw.useMethodQesitm || ''),
+      atpnWarnQesitm: String(raw.atpnWarnQesitm || ''),
+      atpnQesitm: String(raw.atpnQesitm || ''),
+      intrcQesitm: String(raw.intrcQesitm || ''),
+      seQesitm: String(raw.seQesitm || ''),
+      depositMethodQesitm: String(raw.depositMethodQesitm || ''),
+    };
+
+    return cachedJson({ item }, 600, 1200);
   } catch (error) {
     return handleApiError(error, '의약품 상세 정보 조회');
   }
