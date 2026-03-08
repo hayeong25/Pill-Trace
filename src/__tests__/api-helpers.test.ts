@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { NextRequest } from 'next/server';
-import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
+import { checkRateLimit, handleApiError, cachedJson, mapDrugItem } from '@/lib/api-helpers';
 
 describe('handleApiError', () => {
   afterEach(() => vi.restoreAllMocks());
@@ -119,5 +119,46 @@ describe('cachedJson', () => {
   it('sets content-type to application/json', () => {
     const res = cachedJson({ ok: true });
     expect(res.headers.get('content-type')).toContain('application/json');
+  });
+});
+
+describe('mapDrugItem', () => {
+  it('converts raw item to standardized format', () => {
+    const item = { ITEM_SEQ: '123', ITEM_NAME: 'Drug A', ENTP_NAME: 'Corp', ITEM_INGR_NAME: 'Acetaminophen' };
+    const result = mapDrugItem(item, new Set(), new Map());
+    expect(result.ITEM_SEQ).toBe('123');
+    expect(result.ITEM_NAME).toBe('Drug A');
+    expect(result.ENTP_NAME).toBe('Corp');
+    expect(result.ITEM_INGR_NAME).toBe('Acetaminophen');
+    expect(result.ingredients).toHaveLength(1);
+    expect(result.hasEasyInfo).toBe(false);
+    expect(result.maxPrice).toBe('');
+  });
+
+  it('sets hasEasyInfo when ITEM_SEQ is in easySeqs', () => {
+    const item = { ITEM_SEQ: '456', ITEM_NAME: 'Drug B', ENTP_NAME: 'Corp', ITEM_INGR_NAME: 'A' };
+    const result = mapDrugItem(item, new Set(['456']), new Map());
+    expect(result.hasEasyInfo).toBe(true);
+  });
+
+  it('sets maxPrice from priceMap', () => {
+    const item = { ITEM_SEQ: '789', ITEM_NAME: 'Drug C', ENTP_NAME: 'Corp', ITEM_INGR_NAME: 'B' };
+    const result = mapDrugItem(item, new Set(), new Map([['Drug C', '5000']]));
+    expect(result.maxPrice).toBe('5000');
+  });
+
+  it('defaults missing fields to empty strings', () => {
+    const result = mapDrugItem({}, new Set(), new Map());
+    expect(result.ITEM_SEQ).toBe('');
+    expect(result.ITEM_NAME).toBe('');
+    expect(result.CHART).toBe('');
+    expect(result.BIG_PRDT_IMG_URL).toBe('');
+  });
+
+  it('falls back to MATERIAL_NAME when ITEM_INGR_NAME is missing', () => {
+    const item = { ITEM_SEQ: '1', ITEM_NAME: 'Drug', ENTP_NAME: 'Corp', MATERIAL_NAME: 'X/Y' };
+    const result = mapDrugItem(item, new Set(), new Map());
+    expect(result.ITEM_INGR_NAME).toBe('X/Y');
+    expect(result.ingredients).toHaveLength(2);
   });
 });

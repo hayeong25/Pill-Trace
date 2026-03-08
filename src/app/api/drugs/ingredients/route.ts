@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, extractItems, batchedAll, MAX_QUERY_LENGTH, MAX_PAGE, DEFAULT_PAGE_SIZE, BATCH_CONCURRENCY } from '@/lib/api';
-import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
+import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, extractItems, batchedAll, MAX_QUERY_LENGTH, MAX_PAGE, DEFAULT_PAGE_SIZE, BATCH_CONCURRENCY } from '@/lib/api';
+import { checkRateLimit, handleApiError, cachedJson, mapDrugItem } from '@/lib/api-helpers';
 
 export async function GET(request: NextRequest) {
   const rateLimitRes = checkRateLimit(request);
@@ -55,23 +55,7 @@ export async function GET(request: NextRequest) {
     ]);
     const easySeqs = new Set(easyChecks.map(c => c.seq).filter(Boolean));
 
-    const results = items.map((item) => {
-      const itemName = String(item.ITEM_NAME || '');
-      const ingredientName = String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || '');
-      return {
-        ITEM_SEQ: String(item.ITEM_SEQ || ''),
-        ITEM_NAME: itemName,
-        ENTP_NAME: String(item.ENTP_NAME || ''),
-        ITEM_INGR_NAME: ingredientName,
-        CHART: String(item.CHART || ''),
-        STORAGE_METHOD: String(item.STORAGE_METHOD || ''),
-        ITEM_PERMIT_DATE: String(item.ITEM_PERMIT_DATE || ''),
-        BIG_PRDT_IMG_URL: String(item.BIG_PRDT_IMG_URL || ''),
-        ingredients: parseIngredients(ingredientName, itemName),
-        hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
-        maxPrice: priceMap.get(itemName) || '',
-      };
-    });
+    const results = items.map(item => mapDrugItem(item, easySeqs, priceMap));
 
     return cachedJson({ items: results, totalCount, pageNo, numOfRows });
   } catch (error) {

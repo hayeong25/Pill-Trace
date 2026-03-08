@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
+import { parseIngredients } from '@/lib/api';
 
 /**
  * Check rate limit for the request IP. Returns a 429 response if exceeded, or null if OK.
@@ -40,4 +41,29 @@ export function cachedJson(data: unknown, maxAge = 300, staleWhileRevalidate = 6
   const response = NextResponse.json(data);
   response.headers.set('Cache-Control', `public, s-maxage=${maxAge}, stale-while-revalidate=${staleWhileRevalidate}`);
   return response;
+}
+
+/**
+ * Convert raw API item to a standardized drug search result object.
+ */
+export function mapDrugItem(
+  item: Record<string, unknown>,
+  easySeqs: Set<string>,
+  priceMap: Map<string, string>,
+) {
+  const itemName = String(item.ITEM_NAME || '');
+  const ingredientName = String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || '');
+  return {
+    ITEM_SEQ: String(item.ITEM_SEQ || ''),
+    ITEM_NAME: itemName,
+    ENTP_NAME: String(item.ENTP_NAME || ''),
+    ITEM_INGR_NAME: ingredientName,
+    CHART: String(item.CHART || ''),
+    STORAGE_METHOD: String(item.STORAGE_METHOD || ''),
+    ITEM_PERMIT_DATE: String(item.ITEM_PERMIT_DATE || ''),
+    BIG_PRDT_IMG_URL: String(item.BIG_PRDT_IMG_URL || ''),
+    ingredients: parseIngredients(ingredientName, itemName),
+    hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
+    maxPrice: priceMap.get(itemName) || '',
+  };
 }
