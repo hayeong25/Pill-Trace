@@ -175,4 +175,17 @@ describe('batchedAll', () => {
     const results = await batchedAll(tasks, 10);
     expect(results).toEqual([1, 2]);
   });
+
+  it('propagates errors from failing tasks', async () => {
+    const tasks = [
+      async () => 1,
+      async () => { throw new Error('fail'); },
+    ];
+    await expect(batchedAll(tasks, 2)).rejects.toThrow('fail');
+  });
+
+  it('handles single task', async () => {
+    const results = await batchedAll([async () => 42], 1);
+    expect(results).toEqual([42]);
+  });
 });
