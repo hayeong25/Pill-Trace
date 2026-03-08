@@ -20,6 +20,13 @@ interface DrugCardProps {
   onFindSimilar?: () => void;
 }
 
+function formatPermitDate(date: string): string {
+  if (/^\d{8}$/.test(date)) {
+    return `${date.slice(0, 4)}.${date.slice(4, 6)}.${date.slice(6, 8)}`;
+  }
+  return date;
+}
+
 function HighlightText({ text, query }: { text: string; query?: string }) {
   if (!query || !text) return <>{text}</>;
   const lowerText = text.toLowerCase();
@@ -194,7 +201,7 @@ export default memo(function DrugCard({
             <span><span className="font-medium text-gray-500">보관</span> {storageMethod}</span>
           )}
           {permitDate && (
-            <span><span className="font-medium text-gray-500">허가일</span> {permitDate}</span>
+            <span><span className="font-medium text-gray-500">허가일</span> {formatPermitDate(permitDate)}</span>
           )}
         </div>
       )}
