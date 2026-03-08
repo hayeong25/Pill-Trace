@@ -123,11 +123,19 @@ export default function Home() {
     if (currentQuery) {
       fetchResults(currentQuery, currentMode, currentPage);
       document.title = `${currentQuery} - Pill Trace`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', `${currentQuery} ${currentMode === 'ingredient' ? '성분이 포함된 의약품' : '의약품'} 검색 결과 - 성분, 효능, 주의사항 확인`);
+      }
     } else {
       setHasSearched(false);
       setResults(null);
       setError('');
       document.title = 'Pill Trace - 의약품 성분 검색';
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', '약 이름이나 성분으로 의약품을 검색하고, 동일/유사 성분의 약을 찾아보세요. 공공데이터포털 의약품 허가정보 기반.');
+      }
     }
     return () => {
       abortControllerRef.current?.abort();
