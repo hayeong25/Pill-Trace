@@ -11,13 +11,9 @@ export async function GET(request: NextRequest) {
   const pageParam = parseInt(searchParams.get('page') || '1', 10);
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : Math.min(pageParam, MAX_PAGE);
 
-  if (!query || query.length > MAX_QUERY_LENGTH) {
+  const sanitizedQuery = (query || '').trim();
+  if (!sanitizedQuery || sanitizedQuery.length > MAX_QUERY_LENGTH) {
     return NextResponse.json({ error: `성분명을 입력해주세요. (최대 ${MAX_QUERY_LENGTH}자)` }, { status: 400 });
-  }
-
-  const sanitizedQuery = query.trim();
-  if (!sanitizedQuery) {
-    return NextResponse.json({ error: '성분명을 입력해주세요.' }, { status: 400 });
   }
 
   try {
