@@ -107,7 +107,9 @@ export default memo(function DrugCard({
       if (err instanceof Error && err.name === 'AbortError') return;
       setDetailError(true);
     } finally {
-      setIsDetailLoading(false);
+      if (abortRef.current === controller) {
+        setIsDetailLoading(false);
+      }
     }
   };
 
@@ -212,6 +214,8 @@ export default memo(function DrugCard({
                 <button
                   type="button"
                   onClick={() => setShowAllIngredients(!showAllIngredients)}
+                  aria-expanded={showAllIngredients}
+                  aria-label={showAllIngredients ? '성분 목록 접기' : `성분 ${ingredients.length - MAX_VISIBLE_INGREDIENTS}개 더보기`}
                   className="inline-block px-2.5 py-1 bg-gray-100 text-gray-500 text-xs rounded-lg font-medium hover:bg-gray-200 transition-colors"
                 >
                   {showAllIngredients ? '접기' : `+${ingredients.length - MAX_VISIBLE_INGREDIENTS}개 더보기`}
