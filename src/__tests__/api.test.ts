@@ -266,4 +266,32 @@ describe('edge cases', () => {
     const results = await batchedAll(tasks, 1);
     expect(results).toEqual([10, 20, 30]);
   });
+
+  it('findSimilarDrugs returns matchCount and typed fields', () => {
+    const drugs = [{ ITEM_SEQ: '1', ITEM_INGR_NAME: 'A/B/C', ITEM_NAME: 'Drug X', ENTP_NAME: 'Corp' }];
+    const result = findSimilarDrugs(['A', 'C'], drugs, '0');
+    expect(result[0].matchCount).toBe(2);
+    expect(result[0].ITEM_SEQ).toBe('1');
+    expect(result[0].ITEM_NAME).toBe('Drug X');
+    expect(result[0].ENTP_NAME).toBe('Corp');
+    expect(result[0].ITEM_INGR_NAME).toBe('A/B/C');
+  });
+
+  it('findSimilarDrugs falls back to MATERIAL_NAME when ITEM_INGR_NAME is empty', () => {
+    const drugs = [{ ITEM_SEQ: '1', MATERIAL_NAME: 'X/Y', ITEM_NAME: 'Drug' }];
+    const result = findSimilarDrugs(['X'], drugs, '0');
+    expect(result).toHaveLength(1);
+    expect(result[0].ITEM_INGR_NAME).toBe('X/Y');
+  });
+
+  it('parseIngredients with only 총량 section returns empty', () => {
+    const result = parseIngredients('총량 : 1정 중');
+    expect(result).toHaveLength(0);
+  });
+
+  it('parseIngredients skips 첨가제 section', () => {
+    const result = parseIngredients('총량 : 1정 | 유효성분 : 성분A 10mg | 첨가제 : 전분, 유당');
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('성분A');
+  });
 });
