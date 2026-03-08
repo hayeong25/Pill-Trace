@@ -131,9 +131,13 @@ export default function Home() {
       setError('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
       setResults(null);
     } finally {
-      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-      setIsSlowLoading(false);
-      setIsLoading(false);
+      // Only clear loading state if this controller is still the active one
+      // (prevents aborted request's finally from resetting a newer request's state)
+      if (abortControllerRef.current === controller) {
+        if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+        setIsSlowLoading(false);
+        setIsLoading(false);
+      }
     }
   }, []);
 
