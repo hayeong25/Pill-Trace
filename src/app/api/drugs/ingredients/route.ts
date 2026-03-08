@@ -61,9 +61,17 @@ export async function GET(request: NextRequest) {
 
     const results = items.map((item) => {
       const itemName = String(item.ITEM_NAME || '');
+      const ingredientName = String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || '');
       return {
-        ...item,
-        ingredients: parseIngredients(String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || ''), itemName),
+        ITEM_SEQ: String(item.ITEM_SEQ || ''),
+        ITEM_NAME: itemName,
+        ENTP_NAME: String(item.ENTP_NAME || ''),
+        ITEM_INGR_NAME: ingredientName,
+        CHART: String(item.CHART || ''),
+        STORAGE_METHOD: String(item.STORAGE_METHOD || ''),
+        ITEM_PERMIT_DATE: String(item.ITEM_PERMIT_DATE || ''),
+        BIG_PRDT_IMG_URL: String(item.BIG_PRDT_IMG_URL || ''),
+        ingredients: parseIngredients(ingredientName, itemName),
         hasEasyInfo: easySeqs.has(String(item.ITEM_SEQ || '')),
         maxPrice: priceMap.get(itemName) || '',
       };
