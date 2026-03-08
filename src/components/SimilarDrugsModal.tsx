@@ -28,6 +28,7 @@ export default function SimilarDrugsModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasFetched, setHasFetched] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const lastFetchedRef = useRef('');
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function SimilarDrugsModal({
     return () => {
       controller.abort();
     };
-  }, [isOpen, materialName, excludeSeq]);
+  }, [isOpen, materialName, excludeSeq, retryCount]);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -183,7 +184,7 @@ export default function SimilarDrugsModal({
               </svg>
               <p className="text-red-500">{error}</p>
               <button
-                onClick={() => { lastFetchedRef.current = ''; setError(''); }}
+                onClick={() => { lastFetchedRef.current = ''; setError(''); setRetryCount(c => c + 1); }}
                 className="mt-3 px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
               >
                 다시 시도
