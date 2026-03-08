@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Drug price info error:', error);
-    const isTimeout = error instanceof DOMException && error.name === 'AbortError';
+    const isTimeout = error instanceof Error && error.name === 'AbortError';
     return NextResponse.json(
       { error: isTimeout ? '검색 시간이 초과되었습니다. 다시 시도해주세요.' : '약가 정보 조회 중 오류가 발생했습니다.' },
       { status: isTimeout ? 504 : 500 }
