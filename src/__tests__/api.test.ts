@@ -198,3 +198,38 @@ describe('batchedAll', () => {
     expect(results).toEqual([42]);
   });
 });
+
+describe('edge cases', () => {
+  it('findSimilarDrugs with empty target materials returns empty', () => {
+    const drugs = [{ ITEM_SEQ: '1', ITEM_INGR_NAME: 'Acetaminophen', ITEM_NAME: 'Drug A' }];
+    const result = findSimilarDrugs([], drugs, '0');
+    expect(result).toHaveLength(0);
+  });
+
+  it('parseIngredients maps single Korean name to single ingredient', () => {
+    const result = parseIngredients('Acetaminophen', '타이레놀(아세트아미노펜)');
+    expect(result).toHaveLength(1);
+    expect(result[0].nameKo).toBe('아세트아미노펜');
+  });
+
+  it('parseIngredients with mismatched Korean name count sets empty', () => {
+    const result = parseIngredients('Acetaminophen/Caffeine', '약(아세트아미노펜·이부프로펜·카페인)');
+    // 3 Korean names vs 2 ingredients → no match
+    expect(result[0].nameKo).toBe('');
+    expect(result[1].nameKo).toBe('');
+  });
+
+  it('extractItems returns defaults for missing body fields', () => {
+    const data = { body: { items: [{ name: 'test' }] } };
+    const result = extractItems(data);
+    expect(result.totalCount).toBe(0);
+    expect(result.pageNo).toBe(1);
+    expect(result.numOfRows).toBe(20);
+  });
+
+  it('findSimilarDrugs calculates similarity correctly for full match', () => {
+    const drugs = [{ ITEM_SEQ: '1', ITEM_INGR_NAME: 'A/B', ITEM_NAME: 'Drug' }];
+    const result = findSimilarDrugs(['A', 'B'], drugs, '0');
+    expect(result[0].similarity).toBe(1);
+  });
+});
