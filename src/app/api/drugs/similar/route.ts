@@ -65,16 +65,15 @@ export async function GET(request: NextRequest) {
     }
 
     const enriched = sliced.map(drug => {
-      const d = drug as Record<string, unknown>;
       return {
         ITEM_SEQ: drug.ITEM_SEQ,
         ITEM_NAME: drug.ITEM_NAME,
         ENTP_NAME: drug.ENTP_NAME,
         ITEM_INGR_NAME: drug.ITEM_INGR_NAME,
-        CHART: str(d.CHART),
-        STORAGE_METHOD: str(d.STORAGE_METHOD),
-        ITEM_PERMIT_DATE: str(d.ITEM_PERMIT_DATE),
-        BIG_PRDT_IMG_URL: str(d.BIG_PRDT_IMG_URL),
+        CHART: str(drug.CHART),
+        STORAGE_METHOD: str(drug.STORAGE_METHOD),
+        ITEM_PERMIT_DATE: str(drug.ITEM_PERMIT_DATE),
+        BIG_PRDT_IMG_URL: str(drug.BIG_PRDT_IMG_URL),
         ingredients: parseIngredients(drug.ITEM_INGR_NAME, drug.ITEM_NAME),
         similarity: drug.similarity,
         hasEasyInfo: easySeqs.has(drug.ITEM_SEQ),

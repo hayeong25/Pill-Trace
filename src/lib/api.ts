@@ -232,6 +232,10 @@ export interface SimilarDrugResult extends Record<string, unknown> {
   ITEM_NAME: string;
   ENTP_NAME: string;
   ITEM_INGR_NAME: string;
+  CHART?: string;
+  STORAGE_METHOD?: string;
+  ITEM_PERMIT_DATE?: string;
+  BIG_PRDT_IMG_URL?: string;
   similarity: number;
   matchCount: number;
 }
