@@ -70,6 +70,15 @@ describe('extractKoreanIngredients', () => {
     const result = extractKoreanIngredients('약(성분1/성분2)');
     expect(result).toEqual(['성분1', '성분2']);
   });
+
+  it('handles middot separator', () => {
+    const result = extractKoreanIngredients('약(가·나·다)');
+    expect(result).toEqual(['가', '나', '다']);
+  });
+
+  it('skips parenthetical starting with 변경', () => {
+    expect(extractKoreanIngredients('약(변경사항)')).toEqual([]);
+  });
 });
 
 describe('findSimilarDrugs', () => {
