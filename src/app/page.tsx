@@ -252,7 +252,7 @@ export default function Home() {
 
       {/* Search Results Mode */}
       {!showHero && (
-        <div className="max-w-6xl mx-auto px-4 py-8" role="region" aria-label="검색 결과" aria-busy={isLoading}>
+        <div className="max-w-6xl mx-auto px-4 py-8" role="region" aria-label="검색 결과" aria-busy={isLoading} aria-live="polite">
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
               <button
