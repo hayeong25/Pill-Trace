@@ -329,4 +329,33 @@ describe('edge cases', () => {
     const result = parseIngredients('acetaminophen/Acetaminophen');
     expect(result).toHaveLength(1);
   });
+
+  it('findSimilarDrugs sorts higher similarity first', () => {
+    const drugs = [
+      { ITEM_SEQ: '1', ITEM_INGR_NAME: 'A', ITEM_NAME: 'Drug1' },
+      { ITEM_SEQ: '2', ITEM_INGR_NAME: 'A/B', ITEM_NAME: 'Drug2' },
+      { ITEM_SEQ: '3', ITEM_INGR_NAME: 'A/B/C', ITEM_NAME: 'Drug3' },
+    ];
+    const result = findSimilarDrugs(['A', 'B'], drugs, '0');
+    expect(result[0].ITEM_SEQ).toBe('2'); // 100% match
+    expect(result[0].similarity).toBeGreaterThan(result[1].similarity);
+  });
+
+  it('parseIngredients with pipe-separated sections without header', () => {
+    const result = parseIngredients('성분X 100mg; 성분Y 200mg | 성분Z 50mg');
+    expect(result).toHaveLength(3);
+    expect(result[0].amount).toBe('100mg');
+    expect(result[2].amount).toBe('50mg');
+  });
+
+  it('findSimilarDrugs with all drugs excluded returns empty', () => {
+    const drugs = [{ ITEM_SEQ: '1', ITEM_INGR_NAME: 'A', ITEM_NAME: 'Drug' }];
+    const result = findSimilarDrugs(['A'], drugs, '1');
+    expect(result).toHaveLength(0);
+  });
+
+  it('extractKoreanIngredients treats dot as non-separator', () => {
+    const result = extractKoreanIngredients('약(성분1.성분2)');
+    expect(result).toEqual(['성분1.성분2']);
+  });
 });
