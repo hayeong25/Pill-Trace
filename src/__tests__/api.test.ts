@@ -358,4 +358,16 @@ describe('edge cases', () => {
     const result = extractKoreanIngredients('약(성분1.성분2)');
     expect(result).toEqual(['성분1.성분2']);
   });
+
+  it('findSimilarDrugs returns empty for empty drug list', () => {
+    const result = findSimilarDrugs(['A'], [], '0');
+    expect(result).toHaveLength(0);
+  });
+
+  it('parseIngredients handles whitespace in ITEM_INGR_NAME', () => {
+    const result = parseIngredients('  Acetaminophen / Caffeine  ');
+    expect(result).toHaveLength(2);
+    expect(result[0].name).toBe('Acetaminophen');
+    expect(result[1].name).toBe('Caffeine');
+  });
 });
