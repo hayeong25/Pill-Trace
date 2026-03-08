@@ -150,6 +150,7 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Escape') setQuery(''); }}
               placeholder={
                 mode === 'drug'
                   ? '약 이름을 입력하세요 (예: 타이레놀)'
