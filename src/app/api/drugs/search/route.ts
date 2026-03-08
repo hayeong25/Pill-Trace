@@ -11,11 +11,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: '검색어를 입력해주세요. (최대 100자)' }, { status: 400 });
   }
 
+  const sanitizedQuery = query.trim();
+
   try {
     const [data, easyData, priceData] = await Promise.all([
-      searchDrugsByName(query, { pageNo: page, numOfRows: 20 }),
-      getEasyDrugInfo(query, { numOfRows: 100 }).catch(() => null),
-      getDrugPriceInfo(query, { numOfRows: 100 }).catch(() => null),
+      searchDrugsByName(sanitizedQuery, { pageNo: page, numOfRows: 20 }),
+      getEasyDrugInfo(sanitizedQuery, { numOfRows: 100 }).catch(() => null),
+      getDrugPriceInfo(sanitizedQuery, { numOfRows: 100 }).catch(() => null),
     ]);
 
     const { items, totalCount, pageNo, numOfRows } = extractItems(data);

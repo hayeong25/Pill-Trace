@@ -11,8 +11,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: '성분명을 입력해주세요. (최대 100자)' }, { status: 400 });
   }
 
+  const sanitizedQuery = query.trim();
+
   try {
-    const data = await searchDrugsByIngredient(query, {
+    const data = await searchDrugsByIngredient(sanitizedQuery, {
       pageNo: page,
       numOfRows: 20,
     });
