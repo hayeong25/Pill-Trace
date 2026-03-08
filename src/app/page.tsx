@@ -167,14 +167,14 @@ export default function Home() {
     setModal(prev => ({ ...prev, isOpen: false }));
   }, []);
 
-  const handleFindSimilar = (drug: DrugSearchResult) => {
+  const handleFindSimilar = useCallback((drug: DrugSearchResult) => {
     setModal({
       isOpen: true,
       drugName: drug.ITEM_NAME,
       materialName: drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || '',
       excludeSeq: drug.ITEM_SEQ,
     });
-  };
+  }, []);
 
   const showHero = !hasSearched && !currentQuery;
 
