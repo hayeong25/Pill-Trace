@@ -57,6 +57,8 @@ const DETAIL_SECTIONS = [
   { key: 'depositMethodQesitm', label: '보관법', color: 'text-gray-700', bg: 'bg-gray-100', icon: 'M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4' },
 ] as const;
 
+const MAX_VISIBLE_INGREDIENTS = 5;
+
 export default memo(function DrugCard({
   itemName,
   entpName,
@@ -87,7 +89,6 @@ export default memo(function DrugCard({
     return () => { abortRef.current?.abort(); };
   }, []);
 
-  const MAX_VISIBLE_INGREDIENTS = 5;
   const hasMoreIngredients = ingredients.length > MAX_VISIBLE_INGREDIENTS;
   const visibleIngredients = showAllIngredients ? ingredients : ingredients.slice(0, MAX_VISIBLE_INGREDIENTS);
 
