@@ -276,7 +276,7 @@ export default memo(function DrugCard({
                   );
                 })
               ) : detailError ? (
-                <div className="text-center py-6 text-sm bg-red-50 rounded-xl">
+                <div className="text-center py-6 text-sm bg-red-50 rounded-xl" role="alert">
                   <p className="text-red-500">상세 정보를 불러오지 못했습니다.</p>
                   <button
                     onClick={handleRetryDetail}
