@@ -92,6 +92,11 @@ export default function RootLayout({
             </div>
           </nav>
         </header>
+        <noscript>
+          <div className="max-w-2xl mx-auto px-4 py-12 text-center">
+            <p className="text-gray-600 font-medium">이 서비스를 이용하려면 JavaScript를 활성화해주세요.</p>
+          </div>
+        </noscript>
         <main id="main-content" className="flex-1">
           <Suspense fallback={
             <div className="flex flex-col items-center justify-center min-h-[60vh]" role="status" aria-label="페이지 로딩 중">
