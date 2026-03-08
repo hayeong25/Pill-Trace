@@ -251,7 +251,7 @@ export default function Home() {
             <div className="mt-14 animate-fade-in-up-delay-2">
               <div className="flex items-center justify-center gap-2 mb-6">
                 <div className="h-px w-12 bg-gray-200" />
-                <span className="text-sm font-medium text-gray-400">이렇게 이용하세요</span>
+                <h2 className="text-sm font-medium text-gray-400">이렇게 이용하세요</h2>
                 <div className="h-px w-12 bg-gray-200" />
               </div>
               <ol className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 list-none p-0 m-0">
