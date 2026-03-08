@@ -46,6 +46,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
           <>
             <button
               onClick={() => onPageChange(1)}
+              aria-label="첫 페이지"
               className="w-10 h-10 rounded-xl border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors"
             >
               1
@@ -76,6 +77,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
             {end < totalPages - 1 && <span className="px-1 text-gray-300">...</span>}
             <button
               onClick={() => onPageChange(totalPages)}
+              aria-label="마지막 페이지"
               className="w-10 h-10 rounded-xl border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors"
             >
               {totalPages}
