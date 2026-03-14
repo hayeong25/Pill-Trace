@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems, batchedAll, BATCH_CONCURRENCY, MAX_SIMILAR_RESULTS } from '@/lib/api';
-import { checkRateLimit, handleApiError, cachedJson, mapDrugItem } from '@/lib/api-helpers';
-import { normalizeDrugName, normalizeIngredientName } from '@/lib/utils';
+import { checkRateLimit, handleApiError, cachedJson, mapDrugItem, buildPriceMap } from '@/lib/api-helpers';
+import { normalizeIngredientName } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const rateLimitRes = checkRateLimit(request);
@@ -44,12 +44,7 @@ export async function GET(request: NextRequest) {
         uniqueNames.map(name => () =>
           getDrugPriceInfo(name, { numOfRows: 10 })
             .then(d => {
-              const { items: priceItems } = extractItems(d);
-              for (const p of priceItems) {
-                const pName = String(p.itmNm || '');
-                const price = String(p.mxCprc || '');
-                if (pName && price) priceMap.set(normalizeDrugName(pName), price);
-              }
+              buildPriceMap(extractItems(d).items).forEach((v, k) => priceMap.set(k, v));
             })
             .catch(() => {})
         ),

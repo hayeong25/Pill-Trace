@@ -27,7 +27,6 @@ export interface DrugSearchResult {
   ITEM_NAME: string;
   ENTP_NAME: string;
   ITEM_INGR_NAME: string;
-  MATERIAL_NAME?: string;
   CHART?: string;
   STORAGE_METHOD?: string;
   ITEM_PERMIT_DATE?: string;

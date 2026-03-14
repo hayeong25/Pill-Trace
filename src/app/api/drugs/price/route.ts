@@ -13,10 +13,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: '약품명이 필요합니다. (최대 200자)' }, { status: 400 });
   }
 
-  const itemName = rawName;
-
   try {
-    const data = await getDrugPriceInfo(itemName, { numOfRows: 10 });
+    const data = await getDrugPriceInfo(rawName, { numOfRows: 10 });
     const { items } = extractItems(data);
 
     const prices = items.map(item => ({
