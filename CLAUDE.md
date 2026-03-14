@@ -7,8 +7,12 @@
 - AI operates fully autonomously
 
 ## Verification Rules
-- 모든 작업 완료 후, 반드시 http://localhost:3000 웹 페이지가 정상적으로 뜨는지 확인해야 한다
-- 확인 방법: `next dev` 서버를 실행하고, WebFetch로 http://localhost:3000 에 접속하여 페이지가 정상 렌더링(200 OK)되는지 검증
+- 모든 작업 완료 후, 반드시 `.next` 캐시를 삭제한 뒤 http://localhost:3000 웹 페이지가 정상적으로 뜨는지 확인해야 한다
+- 확인 순서:
+  1. `.next` 폴더 삭제 (`rm -rf .next`)
+  2. `next dev` 서버 실행
+  3. WebFetch로 http://localhost:3000 에 접속하여 페이지가 정상 렌더링(200 OK)되는지 검증
+- `.next` 캐시 정리 없이 검증하는 것은 허용되지 않음 (캐시로 인한 오류 은폐 방지)
 - 페이지가 정상적으로 뜨지 않으면 원인을 파악하고 수정한 후 다시 확인
 - lint, build, test 통과 + 페이지 정상 확인이 모두 완료되어야 커밋 가능
 
