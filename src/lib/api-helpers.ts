@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { parseIngredients } from '@/lib/api';
 import { normalizeDrugName } from '@/lib/utils';
+import { DrugSearchResult } from '@/types/drug';
 
 /**
  * Check rate limit for the request IP. Returns a 429 response if exceeded, or null if OK.
@@ -66,7 +67,7 @@ export function mapDrugItem(
   item: Record<string, unknown>,
   easySeqs: Set<string>,
   priceMap: Map<string, string>,
-) {
+): DrugSearchResult {
   const itemName = String(item.ITEM_NAME || '');
   const ingredientName = String(item.ITEM_INGR_NAME || item.MATERIAL_NAME || '');
   return {
