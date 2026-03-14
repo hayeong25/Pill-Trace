@@ -131,6 +131,47 @@ describe('cachedJson', () => {
   });
 });
 
+describe('buildPriceMap', () => {
+  it('builds map from price items with normalized names', () => {
+    const items = [
+      { itmNm: '타이레놀정500mg', mxCprc: '300' },
+      { itmNm: '게보린정', mxCprc: '150' },
+    ];
+    const map = buildPriceMap(items);
+    expect(map.size).toBe(2);
+    expect(map.get(normalizeDrugName('타이레놀정500mg'))).toBe('300');
+    expect(map.get(normalizeDrugName('게보린정'))).toBe('150');
+  });
+
+  it('skips items with empty name or price', () => {
+    const items = [
+      { itmNm: '', mxCprc: '300' },
+      { itmNm: '약', mxCprc: '' },
+      { itmNm: '유효약', mxCprc: '500' },
+    ];
+    const map = buildPriceMap(items);
+    expect(map.size).toBe(1);
+    expect(map.get(normalizeDrugName('유효약'))).toBe('500');
+  });
+
+  it('returns empty map for empty input', () => {
+    const map = buildPriceMap([]);
+    expect(map.size).toBe(0);
+  });
+
+  it('handles missing fields gracefully', () => {
+    const items = [{ other: 'field' }];
+    const map = buildPriceMap(items);
+    expect(map.size).toBe(0);
+  });
+
+  it('normalizes Korean unit names for matching', () => {
+    const items = [{ itmNm: '약500밀리그램', mxCprc: '100' }];
+    const map = buildPriceMap(items);
+    expect(map.get(normalizeDrugName('약500mg'))).toBe('100');
+  });
+});
+
 describe('mapDrugItem', () => {
   it('converts raw item to standardized format', () => {
     const item = { ITEM_SEQ: '123', ITEM_NAME: 'Drug A', ENTP_NAME: 'Corp', ITEM_INGR_NAME: 'Acetaminophen' };
