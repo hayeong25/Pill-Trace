@@ -203,7 +203,7 @@ export default function SimilarDrugsModal({
                 <DrugCard
                   itemName={drug.ITEM_NAME}
                   entpName={drug.ENTP_NAME}
-                  materialName={drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || ''}
+                  materialName={drug.ITEM_INGR_NAME}
                   ingredients={drug.ingredients}
                   permitDate={drug.ITEM_PERMIT_DATE}
                   chart={drug.CHART}

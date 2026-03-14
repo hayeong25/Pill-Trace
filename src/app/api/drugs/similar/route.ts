@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchDrugsByIngredient, getEasyDrugInfo, getDrugPriceInfo, parseIngredients, findSimilarDrugs, extractItems, batchedAll, BATCH_CONCURRENCY, MAX_SIMILAR_RESULTS } from '@/lib/api';
-import { checkRateLimit, handleApiError, cachedJson } from '@/lib/api-helpers';
+import { checkRateLimit, handleApiError, cachedJson, mapDrugItem } from '@/lib/api-helpers';
 import { normalizeDrugName, normalizeIngredientName } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
     const targetNames = ingredients.map(i => i.name);
     const similar = findSimilarDrugs(targetNames, items, excludeSeq);
 
-    const str = (val: unknown) => String(val || '');
     const totalCount = similar.length;
     const sliced = similar.slice(0, MAX_SIMILAR_RESULTS);
 
@@ -65,22 +64,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const enriched = sliced.map(drug => {
-      return {
-        ITEM_SEQ: drug.ITEM_SEQ,
-        ITEM_NAME: drug.ITEM_NAME,
-        ENTP_NAME: drug.ENTP_NAME,
-        ITEM_INGR_NAME: drug.ITEM_INGR_NAME,
-        CHART: str(drug.CHART),
-        STORAGE_METHOD: str(drug.STORAGE_METHOD),
-        ITEM_PERMIT_DATE: str(drug.ITEM_PERMIT_DATE),
-        BIG_PRDT_IMG_URL: str(drug.BIG_PRDT_IMG_URL),
-        ingredients: parseIngredients(drug.ITEM_INGR_NAME, drug.ITEM_NAME),
-        similarity: drug.similarity,
-        hasEasyInfo: easySeqs.has(drug.ITEM_SEQ),
-        maxPrice: priceMap.get(normalizeDrugName(drug.ITEM_NAME)) || '',
-      };
-    });
+    const enriched = sliced.map(drug => ({
+      ...mapDrugItem(drug, easySeqs, priceMap),
+      similarity: drug.similarity,
+    }));
 
     return cachedJson({ items: enriched, totalCount });
   } catch (error) {

@@ -38,7 +38,7 @@ async function fetchJson(url: string, timeout = API_TIMEOUT, retries = FETCH_RET
         throw new Error('API returned non-JSON response');
       }
 
-      return res.json();
+      return await res.json();
     } catch (err) {
       lastError = err instanceof Error ? err : new Error(String(err));
       // Don't retry on client abort or 4xx errors
@@ -245,6 +245,7 @@ export interface SimilarDrugResult extends Record<string, unknown> {
   ITEM_PERMIT_DATE?: string;
   BIG_PRDT_IMG_URL?: string;
   ETC_OTC_CODE?: string;
+  SPCLTY_PBLC?: string;
   similarity: number;
   matchCount: number;
 }
