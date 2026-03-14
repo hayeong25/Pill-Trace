@@ -87,7 +87,7 @@ export default function SimilarDrugsModal({
 
   useEffect(() => {
     if (isOpen) {
-      previousFocusRef.current = document.activeElement as HTMLElement;
+      previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       document.body.style.overflow = 'hidden';
       // Auto-focus close button for keyboard users
       setTimeout(() => closeButtonRef.current?.focus(), 50);

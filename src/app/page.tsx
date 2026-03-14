@@ -82,7 +82,8 @@ export default function Home() {
   const currentQuery = searchParams.get('q') || '';
   const modeParam = searchParams.get('mode');
   const currentMode: 'drug' | 'ingredient' = modeParam === 'ingredient' ? 'ingredient' : 'drug';
-  const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const currentPage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchResults = useCallback(async (query: string, mode: 'drug' | 'ingredient', page: number) => {
