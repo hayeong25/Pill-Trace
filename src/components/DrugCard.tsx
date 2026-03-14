@@ -167,10 +167,10 @@ export default memo(function DrugCard({
               <div className="flex items-center gap-1.5 mt-0.5">
                 <p className="text-sm text-gray-400 truncate" title={entpName}>{entpName}</p>
                 {etcOtcCode && (
-                  <span className={`flex-shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold leading-tight ${
+                  <span className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-bold leading-tight ${
                     etcOtcCode === '전문의약품'
-                      ? 'bg-red-100 text-red-600'
-                      : 'bg-green-100 text-green-600'
+                      ? 'bg-red-100 text-red-700 border border-red-200'
+                      : 'bg-green-100 text-green-700 border border-green-200'
                   }`}>
                     {etcOtcCode === '전문의약품' ? '전문' : '일반'}
                   </span>
@@ -201,15 +201,16 @@ export default memo(function DrugCard({
           {ingredients.length > 0 ? (
             <>
               {visibleIngredients.map((ing, idx) => {
-                const displayName = ing.nameKo || ing.name;
+                const displayName = ing.name;
+                const clickName = ing.nameKo || ing.name;
                 const Tag = onIngredientClick ? 'button' : 'span';
                 return (
                   <Tag
                     key={idx}
                     {...(onIngredientClick ? {
                       type: 'button' as const,
-                      onClick: () => onIngredientClick(displayName),
-                      'aria-label': `${displayName} 성분으로 검색`,
+                      onClick: () => onIngredientClick(clickName),
+                      'aria-label': `${clickName} 성분으로 검색`,
                     } : {})}
                     className={`inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium ${
                       onIngredientClick ? 'hover:bg-blue-100 cursor-pointer transition-colors' : ''
@@ -218,7 +219,8 @@ export default memo(function DrugCard({
                   >
                     <HighlightText text={displayName} query={searchQuery} />
                     {(() => {
-                      const extra = [ing.nameKo ? ing.name : '', ing.amount].filter(Boolean).join(' ');
+                      const koLabel = ing.nameKo && ing.nameKo !== ing.name ? ing.nameKo : '';
+                      const extra = [koLabel, ing.amount].filter(Boolean).join(' ');
                       return extra ? <span className="text-blue-400 ml-1">({extra})</span> : null;
                     })()}
                   </Tag>
