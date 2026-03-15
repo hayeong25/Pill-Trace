@@ -213,6 +213,14 @@ describe('normalizeIngredientName', () => {
     expect(normalizeIngredientName('Acetaminophen micronized')).toBe('Acetaminophen');
   });
 
+  it('strips multiple modifiers', () => {
+    expect(normalizeIngredientName('Calcium Carbonate Powder Compacted')).toBe('Calcium Carbonate');
+  });
+
+  it('does not strip partial modifier matches', () => {
+    expect(normalizeIngredientName('Anhydrous Caffeine')).toBe('Anhydrous Caffeine');
+  });
+
   it('handles empty string', () => {
     expect(normalizeIngredientName('')).toBe('');
   });
