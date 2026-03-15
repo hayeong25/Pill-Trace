@@ -19,6 +19,8 @@ interface ModalState {
   excludeSeq: string;
 }
 
+const MODAL_CLOSED: ModalState = { isOpen: false, drugName: '', materialName: '', excludeSeq: '' };
+
 const FEATURES = [
   {
     icon: (
@@ -83,12 +85,7 @@ export default function Home() {
   const [hasSearched, setHasSearched] = useState(false);
   const [searchTime, setSearchTime] = useState(0);
   const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [modal, setModal] = useState<ModalState>({
-    isOpen: false,
-    drugName: '',
-    materialName: '',
-    excludeSeq: '',
-  });
+  const [modal, setModal] = useState<ModalState>(MODAL_CLOSED);
 
   const currentQuery = searchParams.get('q') || '';
   const modeParam = searchParams.get('mode');
@@ -211,7 +208,7 @@ export default function Home() {
   }, [router]);
 
   const handleCloseModal = useCallback(() => {
-    setModal({ isOpen: false, drugName: '', materialName: '', excludeSeq: '' });
+    setModal(MODAL_CLOSED);
   }, []);
 
   const handleIngredientClick = useCallback((ingredient: string) => {
@@ -219,7 +216,7 @@ export default function Home() {
   }, [handleSearch]);
 
   const handleModalIngredientClick = useCallback((ingredient: string) => {
-    setModal({ isOpen: false, drugName: '', materialName: '', excludeSeq: '' });
+    setModal(MODAL_CLOSED);
     handleSearch(ingredient, 'ingredient');
   }, [handleSearch]);
 
