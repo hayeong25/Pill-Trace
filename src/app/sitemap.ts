@@ -12,23 +12,24 @@ const POPULAR_INGREDIENTS = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://pill-trace.vercel.app';
+  const now = new Date();
 
   return [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'weekly',
       priority: 1,
     },
     ...POPULAR_DRUGS.map(drug => ({
       url: `${baseUrl}/?q=${encodeURIComponent(drug)}`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),
     ...POPULAR_INGREDIENTS.map(ingredient => ({
       url: `${baseUrl}/?q=${encodeURIComponent(ingredient)}&mode=ingredient`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
