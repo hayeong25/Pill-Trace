@@ -20,10 +20,24 @@ const DRUG_PERMIT_BASE = 'https://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoServi
 const EASY_DRUG_BASE = 'https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList';
 const DRUG_PRICE_BASE = 'https://apis.data.go.kr/B551182/dgamtCrtrInfoService1.2/getDgamtList';
 
-function fetchWithTimeout(url: string, timeout = API_TIMEOUT): Promise<Response> {
+class TimeoutError extends Error {
+  constructor() {
+    super('Request timed out');
+    this.name = 'TimeoutError';
+  }
+}
+
+async function fetchWithTimeout(url: string, timeout = API_TIMEOUT): Promise<Response> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
-  return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') throw new TimeoutError();
+    throw err;
+  } finally {
+    clearTimeout(id);
+  }
 }
 
 async function fetchJson(url: string, timeout = API_TIMEOUT, retries = FETCH_RETRIES) {

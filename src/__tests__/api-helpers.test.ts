@@ -23,6 +23,16 @@ describe('handleApiError', () => {
     expect(data.error).toBe('검색 시간이 초과되었습니다. 다시 시도해주세요.');
   });
 
+  it('returns 504 for TimeoutError', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const timeoutError = new Error('Request timed out');
+    timeoutError.name = 'TimeoutError';
+    const res = handleApiError(timeoutError, '검색');
+    expect(res.status).toBe(504);
+    const data = await res.json();
+    expect(data.error).toBe('검색 시간이 초과되었습니다. 다시 시도해주세요.');
+  });
+
   it('handles non-Error objects', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const res = handleApiError('string error', '작업');
