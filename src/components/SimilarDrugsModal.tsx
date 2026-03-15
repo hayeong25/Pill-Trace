@@ -19,6 +19,8 @@ interface SimilarDrugsModalProps {
   onIngredientClick?: (ingredient: string) => void;
 }
 
+const FOCUS_DELAY_MS = 50;
+
 export default function SimilarDrugsModal({
   isOpen,
   onClose,
@@ -89,8 +91,7 @@ export default function SimilarDrugsModal({
     if (isOpen) {
       previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       document.body.style.overflow = 'hidden';
-      // Auto-focus close button for keyboard users
-      setTimeout(() => closeButtonRef.current?.focus(), 50);
+      setTimeout(() => closeButtonRef.current?.focus(), FOCUS_DELAY_MS);
 
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {

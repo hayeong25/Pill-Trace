@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 
 type SearchMode = 'drug' | 'ingredient';
 
@@ -42,7 +42,7 @@ function saveRecentSearch(query: string) {
   }
 }
 
-export default function SearchBar({ onSearch, isLoading, compact, initialQuery = '', initialMode = 'drug' }: SearchBarProps) {
+export default memo(function SearchBar({ onSearch, isLoading, compact, initialQuery = '', initialMode = 'drug' }: SearchBarProps) {
   const [query, setQuery] = useState(initialQuery);
   const [mode, setMode] = useState<SearchMode>(initialMode);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -250,4 +250,4 @@ export default function SearchBar({ onSearch, isLoading, compact, initialQuery =
       )}
     </form>
   );
-}
+})

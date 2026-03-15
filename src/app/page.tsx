@@ -55,6 +55,10 @@ const FEATURES = [
   },
 ];
 
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+}
+
 const STEPS = [
   { step: '1', text: '검색 모드를 선택하세요', sub: '약 이름 또는 성분명' },
   { step: '2', text: '검색어를 입력하세요', sub: '일부만 입력해도 OK' },
@@ -170,7 +174,8 @@ export default function Home() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        const target = e.target as HTMLElement;
+        const target = e.target;
+        if (!(target instanceof HTMLElement)) return;
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
         e.preventDefault();
         const searchInput = document.querySelector<HTMLInputElement>('input[type="search"]');
@@ -185,7 +190,7 @@ export default function Home() {
     const params = new URLSearchParams({ q: query });
     if (mode !== 'drug') params.set('mode', mode);
     router.push(`/?${params.toString()}`);
-    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    scrollToTop();
   }, [router]);
 
   const handlePageChange = useCallback((page: number) => {
@@ -193,7 +198,7 @@ export default function Home() {
     if (currentMode !== 'drug') params.set('mode', currentMode);
     if (page > 1) params.set('page', String(page));
     router.push(`/?${params.toString()}`);
-    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    scrollToTop();
   }, [router, currentQuery, currentMode]);
 
   const handleGoHome = useCallback(() => {
@@ -439,14 +444,16 @@ export default function Home() {
         </div>
       )}
 
-      <SimilarDrugsModal
-        isOpen={modal.isOpen}
-        onClose={handleCloseModal}
-        drugName={modal.drugName}
-        materialName={modal.materialName}
-        excludeSeq={modal.excludeSeq}
-        onIngredientClick={handleModalIngredientClick}
-      />
+      <DrugCardErrorBoundary>
+        <SimilarDrugsModal
+          isOpen={modal.isOpen}
+          onClose={handleCloseModal}
+          drugName={modal.drugName}
+          materialName={modal.materialName}
+          excludeSeq={modal.excludeSeq}
+          onIngredientClick={handleModalIngredientClick}
+        />
+      </DrugCardErrorBoundary>
     </div>
   );
 }
