@@ -55,6 +55,8 @@ const FEATURES = [
   },
 ];
 
+const SLOW_LOADING_THRESHOLD_MS = 5000;
+
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 }
@@ -101,7 +103,7 @@ export default function Home() {
     setHasSearched(true);
     setSearchTime(0);
     if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
-    slowTimerRef.current = setTimeout(() => setIsSlowLoading(true), 5000);
+    slowTimerRef.current = setTimeout(() => setIsSlowLoading(true), SLOW_LOADING_THRESHOLD_MS);
     const startTime = performance.now();
 
     try {
