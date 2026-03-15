@@ -64,7 +64,7 @@ export default function RootLayout({
                 '@type': 'SearchAction',
                 target: {
                   '@type': 'EntryPoint',
-                  urlTemplate: 'https://pill-trace.vercel.app/?q={search_term_string}&mode=drug',
+                  urlTemplate: 'https://pill-trace.vercel.app/?q={search_term_string}',
                 },
                 'query-input': 'required name=search_term_string',
               },
