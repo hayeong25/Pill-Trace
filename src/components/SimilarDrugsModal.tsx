@@ -153,6 +153,7 @@ export default function SimilarDrugsModal({
             </p>
           </div>
           <button
+            type="button"
             ref={closeButtonRef}
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
@@ -181,6 +182,7 @@ export default function SimilarDrugsModal({
               </svg>
               <p className="text-red-500">{error}</p>
               <button
+                type="button"
                 onClick={() => { lastFetchedRef.current = ''; setError(''); setRetryCount(c => c + 1); }}
                 className="mt-3 px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
               >

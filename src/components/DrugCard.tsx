@@ -263,6 +263,7 @@ export default memo(function DrugCard({
       {(hasEasyInfo || onFindSimilar) && <div className="flex gap-2">
         {hasEasyInfo && (
           <button
+            type="button"
             onClick={handleToggleDetail}
             aria-expanded={isDetailOpen}
             aria-label={`${itemName} 상세 정보 ${isDetailOpen ? '접기' : '펼치기'}`}
@@ -285,6 +286,7 @@ export default memo(function DrugCard({
         )}
         {onFindSimilar && itemSeq && (
           <button
+            type="button"
             onClick={() => onFindSimilar(itemSeq, itemName, materialName)}
             aria-label={`${itemName}과 유사한 약품 찾기`}
             aria-haspopup="dialog"
@@ -327,6 +329,7 @@ export default memo(function DrugCard({
                 <div className="text-center py-6 text-sm bg-red-50 rounded-xl" role="alert">
                   <p className="text-red-500">상세 정보를 불러오지 못했습니다.</p>
                   <button
+                    type="button"
                     onClick={handleRetryDetail}
                     className="mt-2 text-xs text-red-600 underline hover:no-underline"
                   >

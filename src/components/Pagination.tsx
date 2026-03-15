@@ -32,6 +32,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
       </p>
       <nav className="flex items-center justify-center gap-1.5" aria-label={`페이지 이동 (${currentPage}/${totalPages})`}>
         <button
+          type="button"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
           aria-label="이전 페이지"
@@ -45,6 +46,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
         {start > 1 && (
           <>
             <button
+              type="button"
               onClick={() => onPageChange(1)}
               aria-label="첫 페이지"
               className="w-10 h-10 rounded-xl border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors"
@@ -57,6 +59,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
 
         {pages.map(page => (
           <button
+            type="button"
             key={page}
             onClick={() => onPageChange(page)}
             disabled={page === currentPage}
@@ -76,6 +79,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
           <>
             {end < totalPages - 1 && <span className="px-1 text-gray-300" aria-hidden="true">...</span>}
             <button
+              type="button"
               onClick={() => onPageChange(totalPages)}
               aria-label="마지막 페이지"
               className="w-10 h-10 rounded-xl border border-gray-200 text-sm font-medium hover:bg-gray-50 transition-colors"
@@ -86,6 +90,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
         )}
 
         <button
+          type="button"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
           aria-label="다음 페이지"

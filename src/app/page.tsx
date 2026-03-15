@@ -309,6 +309,7 @@ export default function Home() {
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-4">
               <button
+                type="button"
                 onClick={handleGoHome}
                 className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors"
               >
@@ -345,6 +346,7 @@ export default function Home() {
               </svg>
               <p className="text-red-600 font-medium">{error}</p>
               <button
+                type="button"
                 onClick={() => fetchResults(currentQuery, currentMode, currentPage)}
                 className="mt-3 px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
               >
