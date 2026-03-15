@@ -21,8 +21,10 @@ export function rateLimit(ip: string): { success: boolean; remaining: number } {
 }
 
 // Periodic cleanup to prevent memory leak (every 5 minutes)
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
+// Guard against HMR accumulating multiple intervals
+const CLEANUP_INTERVAL_KEY = '__pillTraceRateLimitCleanup';
+if (typeof setInterval !== 'undefined' && !(globalThis as Record<string, unknown>)[CLEANUP_INTERVAL_KEY]) {
+  (globalThis as Record<string, unknown>)[CLEANUP_INTERVAL_KEY] = setInterval(() => {
     const now = Date.now();
     rateLimitMap.forEach((value, key) => {
       if (now > value.resetAt) {
