@@ -57,6 +57,11 @@ const FEATURES = [
 
 const SLOW_LOADING_THRESHOLD_MS = 5000;
 
+function setMeta(title: string, desc: string) {
+  document.title = title;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', desc);
+}
+
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
 }
@@ -150,11 +155,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const setMeta = (title: string, desc: string) => {
-      document.title = title;
-      document.querySelector('meta[name="description"]')?.setAttribute('content', desc);
-    };
-
     if (currentQuery) {
       fetchResults(currentQuery, currentMode, currentPage);
       setMeta(
@@ -219,7 +219,7 @@ export default function Home() {
   }, [handleSearch]);
 
   const handleModalIngredientClick = useCallback((ingredient: string) => {
-    setModal(prev => ({ ...prev, isOpen: false }));
+    setModal({ isOpen: false, drugName: '', materialName: '', excludeSeq: '' });
     handleSearch(ingredient, 'ingredient');
   }, [handleSearch]);
 

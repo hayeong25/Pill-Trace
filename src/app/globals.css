@@ -135,7 +135,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 @media (forced-colors: active) {
-  .detail-expand {
+  .detail-expand[data-open="true"] {
     border: 1px solid ButtonText;
   }
 

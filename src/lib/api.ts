@@ -264,18 +264,22 @@ export interface SimilarDrugResult extends Record<string, unknown> {
   matchCount: number;
 }
 
+function normalizeForMatch(name: string): string {
+  return normalizeIngredientName(name).toLowerCase().trim();
+}
+
 export function findSimilarDrugs(
   targetMaterials: string[],
   allDrugs: Array<Record<string, unknown>>,
   excludeSeq: string
 ): SimilarDrugResult[] {
-  const targetSet = new Set(targetMaterials.map(m => normalizeIngredientName(m).toLowerCase().trim()));
+  const targetSet = new Set(targetMaterials.map(normalizeForMatch));
 
   return allDrugs
     .filter(drug => String(drug.ITEM_SEQ || '') !== excludeSeq)
     .map(drug => {
       const ingredientName = String(drug.ITEM_INGR_NAME || drug.MATERIAL_NAME || '');
-      const drugIngredients = parseIngredients(ingredientName).map(i => normalizeIngredientName(i.name).toLowerCase().trim());
+      const drugIngredients = parseIngredients(ingredientName).map(i => normalizeForMatch(i.name));
       const matchCount = drugIngredients.filter(i => targetSet.has(i)).length;
       const similarity = targetSet.size > 0 ? matchCount / Math.max(targetSet.size, drugIngredients.length) : 0;
       return {
