@@ -176,11 +176,16 @@ export default memo(function DrugCard({
                   </span>
                 )}
               </div>
-              {maxPrice && !isNaN(Number(maxPrice)) && (
-                <p className="text-sm font-semibold text-emerald-600 mt-1" aria-label={`약가 약 ${Math.round(Number(maxPrice)).toLocaleString()}원`}>
-                  약 {Math.round(Number(maxPrice)).toLocaleString()}원
-                </p>
-              )}
+              {(() => {
+                const price = Number(maxPrice);
+                if (!maxPrice || isNaN(price)) return null;
+                const formatted = Math.round(price).toLocaleString();
+                return (
+                  <p className="text-sm font-semibold text-emerald-600 mt-1" aria-label={`약가 약 ${formatted}원`}>
+                    약 {formatted}원
+                  </p>
+                );
+              })()}
             </div>
             {similarity !== undefined && (
               <span className={`flex-shrink-0 ml-2 px-2.5 py-1 rounded-full text-xs font-bold ${
