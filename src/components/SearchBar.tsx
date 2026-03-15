@@ -32,13 +32,15 @@ function getRecentSearches(): string[] {
   }
 }
 
-function saveRecentSearch(query: string) {
+function saveRecentSearch(query: string): string[] {
   try {
     const recent = getRecentSearches().filter(q => q !== query);
     recent.unshift(query);
-    localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)));
+    const updated = recent.slice(0, MAX_RECENT);
+    localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(updated));
+    return updated;
   } catch {
-    // localStorage unavailable
+    return [];
   }
 }
 
@@ -57,8 +59,7 @@ export default memo(function SearchBar({ onSearch, isLoading, compact, initialQu
   }, []);
 
   const executeSearch = useCallback((keyword: string, searchMode: SearchMode) => {
-    saveRecentSearch(keyword);
-    setRecentSearches(getRecentSearches());
+    setRecentSearches(saveRecentSearch(keyword));
     onSearch(keyword, searchMode);
   }, [onSearch]);
 

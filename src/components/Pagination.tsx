@@ -58,7 +58,7 @@ export default memo(function Pagination({ currentPage, totalCount, numOfRows, on
         {pages.map(page => (
           <button
             key={page}
-            onClick={() => page !== currentPage && onPageChange(page)}
+            onClick={() => onPageChange(page)}
             disabled={page === currentPage}
             aria-label={`${page} 페이지`}
             aria-current={page === currentPage ? 'page' : undefined}
