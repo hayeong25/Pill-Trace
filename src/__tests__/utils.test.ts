@@ -76,6 +76,11 @@ describe('stripHtmlTags', () => {
     expect(stripHtmlTags('&#x41;&#x42;')).toBe('AB');
   });
 
+  it('decodes supplementary plane Unicode entities (above BMP)', () => {
+    expect(stripHtmlTags('&#128138;')).toBe('💊');
+    expect(stripHtmlTags('&#x1F48A;')).toBe('💊');
+  });
+
   it('handles multiple script tags', () => {
     expect(stripHtmlTags('a<script>x</script>b<script>y</script>c')).toBe('abc');
   });
@@ -164,6 +169,10 @@ describe('normalizeDrugName', () => {
   it('normalizes identical drugs with different unit formats', () => {
     expect(normalizeDrugName('타이레놀정500밀리그램(아세트아미노펜)'))
       .toBe(normalizeDrugName('타이레놀정500mg(아세트아미노펜)'));
+  });
+
+  it('strips HIRA dose suffix', () => {
+    expect(normalizeDrugName('타이레놀정_(500mg/1정)')).toBe('타이레놀정');
   });
 
   it('handles empty string', () => {
