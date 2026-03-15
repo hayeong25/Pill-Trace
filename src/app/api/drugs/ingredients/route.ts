@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
         ),
         BATCH_CONCURRENCY
       ),
+      // Price data populates priceMap via side-effect; result not needed
       batchedAll(
         uniqueNames.map(name => () =>
           getDrugPriceInfo(name, { numOfRows: 10 })
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
         ),
         BATCH_CONCURRENCY
       ),
-    ]);
+    ] as const);
     const easySeqs = new Set(easyChecks.map(c => c.seq).filter(Boolean));
 
     const results = items.map(item => mapDrugItem(item, easySeqs, priceMap));

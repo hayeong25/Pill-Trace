@@ -9,9 +9,6 @@ export interface EasyDrugInfo {
   intrcQesitm: string;
   seQesitm: string;
   depositMethodQesitm: string;
-  openDe: string;
-  updateDe: string;
-  itemImage: string;
 }
 
 export interface ParsedIngredient {
