@@ -312,7 +312,7 @@ export default memo(function DrugCard({
               {easyInfo ? (
                 (() => {
                   const sections = DETAIL_SECTIONS.map(({ key, label, color, bg, icon }) => {
-                    const value = easyInfo[key as keyof EasyDrugInfo];
+                    const value = easyInfo[key];
                     if (!value) return null;
                     return (
                       <div key={key} className={`${bg} rounded-xl p-4`}>
