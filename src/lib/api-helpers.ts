@@ -8,7 +8,9 @@ import { DrugSearchResult } from '@/types/drug';
  * Check rate limit for the request IP. Returns a 429 response if exceeded, or null if OK.
  */
 export function checkRateLimit(request: NextRequest): NextResponse | null {
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')?.trim()
+    || 'anonymous';
   const { success } = rateLimit(ip);
   if (!success) {
     const res = NextResponse.json(

@@ -190,14 +190,14 @@ export function parseIngredients(ingredientName: string, itemName?: string): Par
   // Deduplicate ingredients (API sometimes returns same ingredient twice)
   const seen = new Set<string>();
   const uniqueParts = parts.filter(part => {
-    const key = part.replace(/\s*\(.*?\)\s*/g, '').trim().toLowerCase();
+    const key = part.replace(/\s*\([^)]*\)\s*/g, '').trim().toLowerCase();
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
 
   return uniqueParts.map((part, idx) => ({
-    name: part.replace(/\s*\(.*?\)\s*/g, '').trim(),
+    name: part.replace(/\s*\([^)]*\)\s*/g, '').trim(),
     nameKo: koreanNames.length === uniqueParts.length ? koreanNames[idx] : (koreanNames.length === 1 && uniqueParts.length === 1 ? koreanNames[0] : ''),
     amount: '',
     unit: '',
@@ -227,8 +227,8 @@ function parseMaterialName(materialName: string): ParsedIngredient[] {
   return ingredientParts.map(part => {
     const amountMatch = part.match(/^(.+?)\s+([\d,.]+\s*[a-zA-Zμ㎍㎎㎖%]+.*)$/);
     const name = amountMatch
-      ? amountMatch[1].replace(/\s*\(.*?\)\s*/g, '').trim()
-      : part.replace(/\s*\(.*?\)\s*/g, '').trim();
+      ? amountMatch[1].replace(/\s*\([^)]*\)\s*/g, '').trim()
+      : part.replace(/\s*\([^)]*\)\s*/g, '').trim();
     return {
       name,
       nameKo: /[가-힣]/.test(name) ? name : '',

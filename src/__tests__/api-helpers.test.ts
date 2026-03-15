@@ -78,8 +78,16 @@ describe('checkRateLimit', () => {
     expect(result).toBeNull();
   });
 
-  it('falls back to "unknown" when x-forwarded-for is missing', () => {
+  it('falls back to "anonymous" when IP headers are missing', () => {
     const req = new NextRequest('http://localhost/api/test');
+    const result = checkRateLimit(req);
+    expect(result).toBeNull();
+  });
+
+  it('falls back to x-real-ip when x-forwarded-for is missing', () => {
+    const req = new NextRequest('http://localhost/api/test', {
+      headers: { 'x-real-ip': '172.16.0.1' },
+    });
     const result = checkRateLimit(req);
     expect(result).toBeNull();
   });
