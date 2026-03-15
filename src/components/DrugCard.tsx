@@ -270,7 +270,7 @@ export default memo(function DrugCard({
           >
             {isDetailLoading ? (
               <>
-                <div className="w-3.5 h-3.5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+                <div className="w-3.5 h-3.5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" aria-hidden="true" />
                 로딩 중
               </>
             ) : (

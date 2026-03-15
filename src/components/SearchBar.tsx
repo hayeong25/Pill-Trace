@@ -189,7 +189,7 @@ export default memo(function SearchBar({ onSearch, isLoading, compact, initialQu
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
                 <span>검색 중</span>
               </div>
             ) : '검색'}
