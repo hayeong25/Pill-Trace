@@ -249,7 +249,7 @@ export async function batchedAll<T>(tasks: (() => Promise<T>)[], concurrency: nu
   return results;
 }
 
-export interface SimilarDrugResult extends Record<string, unknown> {
+interface SimilarDrugResult extends Record<string, unknown> {
   ITEM_SEQ: string;
   ITEM_NAME: string;
   ENTP_NAME: string;
